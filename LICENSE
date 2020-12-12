@@ -1,3 +1,7 @@
+Note that the base for the scriptEditor.js files is the default script from LabArchives Widget Manager. 
+I do not own the rights for these portions of the code. 
+The default code is provided for reference in the repository as "defaultScriptEditor.js"
+
 MIT License
 
 Copyright (c) 2020 Amanda Gibson
