@@ -4,14 +4,14 @@
 * These Widgets use HTML form elements and the JavaScript elements in LabArchives to create Widgets that can be added to LabArchives electronic research notebooks.
 
 ## Table of Contents
-- [Navigate to Widget Manager](#Navigate%20to%20Widget%20Manager)
-- [Create a New Widget](#Create%20a%20New%20Widget)
-- [Name Your Widget](#Name%20Your%20Widget)
-- [Edit the Content of the Widget](#Edit%20the%20Contents%20of%20the%20Widget)
-  * [Widget HTML Editor](#Widget%20HTML%20Editor)
-  * [Script Editor](#Script%20Editor)
-- [Save Your Widget](#Save%20Your%20Widget)
-- [Deploy Your Widget](#Deploy%20Your%20Widget)
+- [Navigate to Widget Manager](#navigate-to-widget-manager)
+- [Create a New Widget](#create-a-new-widget)
+- [Name Your Widget](#name-your-widget)
+- [Edit the Content of the Widget](#edit-the-contents-of-the-widget)
+  * [Widget HTML Editor](#widget-html-editor)
+  * [Script Editor](#script-editor)
+- [Save Your Widget](#save-your-widget)
+- [Deploy Your Widget](#deploy-your-widget)
 
 ## Navigate to Widget Manager
 Within LabArchives, click on the menu in the upper right-hand corner. Look for "Widgets" and then click on "Widget Manager"
