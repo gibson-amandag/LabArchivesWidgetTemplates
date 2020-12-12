@@ -47,6 +47,7 @@ my_widget_script =
         if (mode !== "edit" && mode !== "edit_dev") {
             //disable when not editing
             $("#myButton").prop('disabled', true);
+          	$("#calculate").prop('disabled', true);
         };
 
         //when the size of the window changes, run the resize function
@@ -74,8 +75,8 @@ my_widget_script =
             my_widget_script.exportTableToCSV('templateData', 'outTable');
         });
 
-        //When the "addDivCheck" checkbox is clicked, run this function
-        $('#addDivCheck').click(function(){
+        //When the "addDivCheck" checkbox is changed, run this function
+        $('#addDivCheck').change(function(){ //change rather than click so that it runs only when editable
           	//alert("You clicked me!");
             if( $(this).is(":checked") ){
               	//alert("I'm checked");
@@ -205,7 +206,7 @@ my_widget_script =
             } else { //if there is a required attribute
                 if (!$(this).val()) { //if there is not a value for this input
                     fail = true; //change fail to true
-                    name = $(this).attr('name'); //replace the name variable with the name attribute of this element
+                    name = $(this).attr('id'); //replace the name variable with the name attribute of this element
                     fail_log += name + " is required \n"; //add to the fail log that this name is required
                 }
 
@@ -326,7 +327,7 @@ my_widget_script =
     createMyContent: function () {
         var myContent = "<div id='myContentID'>You just made me</div>";
 
-        $("#dynamicDiv").append(myContent);
+        $("#dynamicDiv").append(myContent); //add to the end of the dynamicDiv
 
         //resize the container after creating or deleting or modifying content
         my_widget_script.parent_class.resize_container();
