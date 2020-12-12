@@ -5,15 +5,15 @@
 
 ## Navigate to Widget Manager
 Within LabArchives, click on the menu in the upper right-hand corner. Look for "Widgets" and then click on "Widget Manager"
-![Image of LabArchives showing access to Widget Manager](images/1_accessWidgetManager.png){:height="50%" width="50%"}
+![Image of LabArchives showing access to Widget Manager](images/1_accessWidgetManager.png)
 
 ## Create a New Widget
 Click on "New" in the top bar of the Widget Manager
-![Image of LabArchives showing location of new button](images/2_createNewWidget.png){:height="50%" width="50%"}
+![Image of LabArchives showing location of new button](images/2_createNewWidget.png)
 
 ## Name Your Widget
 Add a name and description to your Widget
-![Image of LabArchives showing name and description fields](images/3_nameWidget.png){:height="50%" width="50%"}
+![Image of LabArchives showing name and description fields](images/3_nameWidget.png)
 
 ## Edit the Contents of the Widget
 You will see three different panes for developing your widget: (1) Widget HTML Editor (2) Preview and (3) Script Editor
@@ -44,8 +44,8 @@ Return to the top of the page within LabArchives. By the name and description, y
 * Press "New" and look for "Widgets" within the list of content options
   * ![Image of LabArchives showing widget option in list of new items](images/8_addWidget.png)
 * Select the Widget you wish to add from the list
-  * ![Image of LabArchives showing selection of widget](images/9_selectWidget.png){:height="50%" width="50%"}
+  * ![Image of LabArchives showing selection of widget](images/9_selectWidget.png)
 * Press "Use [Widget Name]"
-  * ![Image of LabArchives showing use widget button](images/10_useWidget.png){:height="50%" width="50%"}
+  * ![Image of LabArchives showing use widget button](images/10_useWidget.png)
 * Edit the form contents, being sure to complete required fields before trying to save the Widget to the notebook
   * ![Image of LabArchives showing widget editing when added to notebook](images/11_fillContent.png)
