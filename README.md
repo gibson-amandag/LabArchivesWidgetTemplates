@@ -5,18 +5,22 @@
 
 ## Navigate to Widget Manager
 Within LabArchives, click on the menu in the upper right-hand corner. Look for "Widgets" and then click on "Widget Manager"
+
 ![Image of LabArchives showing access to Widget Manager](images/1_accessWidgetManager.png)
 
 ## Create a New Widget
 Click on "New" in the top bar of the Widget Manager
+
 ![Image of LabArchives showing location of new button](images/2_createNewWidget.png)
 
 ## Name Your Widget
 Add a name and description to your Widget
+
 ![Image of LabArchives showing name and description fields](images/3_nameWidget.png)
 
 ## Edit the Contents of the Widget
 You will see three different panes for developing your widget: (1) Widget HTML Editor (2) Preview and (3) Script Editor
+
 ![Image of LabArchives showing editing panes](images/4_editingPane.png)
 
 ### Widget HTML Editor
@@ -25,6 +29,7 @@ You will see three different panes for developing your widget: (1) Widget HTML E
   * Select all and copy the contents of this document
 * Return to the Widget HTML editor. Paste the contents of labArchives.html
   * Source must be enabled to allow you to paste this content as HTML-formated text
+  
 ![Image of LabArchives showing Widget HTML Editor with source clicked](images/5_sourceHTML.png)
 
 ### Script Editor
@@ -33,10 +38,12 @@ You will see three different panes for developing your widget: (1) Widget HTML E
 * Open the "scriptEditor.js" document for the widget you wish to add from this repository
   * Select all and copy the contents of this document
 * Return to the Script Editor. Paste the contents of scriptEditor.js, replacing the existing LabArchives default content
+
 ![Image of LabArchives showing Script Editor](images/6_scriptEditor.png)
 
 ## Save Your Widget
 Return to the top of the page within LabArchives. By the name and description, you will see a "Save" button and red text that indicates if edits have been made.
+
 ![Image of LabArchives showing save button](images/7_saveWidget.png)
 
 ## Deploy Your Widget
