@@ -1,0 +1,71 @@
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* Add this class to a div to all for flex wrapping */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Each div takes of 50% of width. Creates two columns within the container */
+    .container>div {
+        flex: 0 50%;
+        margin-bottom: 5px;
+    }
+
+    /* Add this class to a div around tables. The script will automatically change the width to match the window
+    Adds a scroll bar when the content is too big for the width */
+    .tableDiv {
+        width: 400px;
+        overflow-x: scroll;
+
+    }
+</style>
+<!-- TO DO Begin typing your HTML code here -->
+
+<div class="container">
+    <div>
+        Example button:
+    </div>
+    <div>
+        <input type="button" id="myButton" name="mybutton" value="Click Me!" />
+    </div>
+    <div>
+        Column A Text:
+    </div>
+    <div>
+        <input id="ColumnA" name="columna" required />
+    </div>
+    <div>
+        Column B Number:
+    </div>
+    <div>
+        <input type="number" id="ColumnB" name="columnb" />
+    </div>
+</div>
+
+<p><input id="toggleTable" name="toggletable" type="button" value="Show/Hide Table" />
+    <input id="calculate" name="calcvalues" type="button" value="Calculate Values" />
+    <input id="toCSV" name="tocsv" type="button" value="Save CSV" />
+
+<div class="tableDiv" id="tableDiv" style="display:none">
+    <table border="1pt" id="outTable">
+        <tbody>
+            <tr>
+                <th>ColumnA</th>
+                <th>ColumnB</th>
+            </tr>
+            <tr>
+                <td id="ColumnA_calc">&nbsp;</td>
+                <td id="ColumnB_calc">&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>&nbsp;</p>
+</div>
+
+<div id="dynamicDiv">
+    <label for="addDivCheck">Add Dynamic Content</label>
+    <input type="checkbox" id="addDivCheck" name="adddivcheck">
+</div>
