@@ -49,17 +49,11 @@ my_widget_script =
         ** -----------------------------------------------------------------------------
         */
 
-        //EXAMPLE:
-        //if myContent exists, run the function to create it
-      	/*Note that for this situation where a checkbox defines whether or not the content exists, 
-		this is not actually the simplest way to do this. The init function can just check whether or not 
-		the box is checked and then run the appropriate functions. However, for content that may have been 
-		made by a button that could have been clicked an unknown number of times, for example, then additional 
-		information needs to be passed into to_json and used to recreate content as demonstrated here*/
-        if(parsedJson.existsMyContent){
-            //if it exists, run the function
-            this.createMyContent();
-        };
+        ///adds rows back to exampleTable when initializing
+        for (var i = 0; i < parsedJson.addedRows; i++) {
+            var tableName = $("#exampleTable");
+            my_widget_script.createRow(tableName);
+        }
 
         /* -----------------------------------------------------------------------------
         ** ADJUST FORM DESIGN AND BUTTONS BASED ON MODE
@@ -73,7 +67,9 @@ my_widget_script =
         if (mode !== "edit" && mode !== "edit_dev") {
             //disable when not editing
             $("#myButton").prop('disabled', true);
-          	$("#calculate").prop('disabled', true);
+              $("#calculate").prop('disabled', true);
+              $("#addRow").prop('disabled', true);
+              $("#removeRow").prop('disabled', true);
         };
 
         /* -----------------------------------------------------------------------------
@@ -94,31 +90,65 @@ my_widget_script =
         //Show/hide the table
         $("#toggleTable").click(function () { //when the showTable button is clicked. Run this function
             //alert("button pressed");
-            //Get width
-            var width = window.innerWidth;
-            $(".tableDiv").width(width * .95); //make width 95% of current width
+            my_widget_script.resize();
+            my_widget_script.data_valid_form(); //run to give error, but allow to calc regardless
+            my_widget_script.calcValues();
             $("#tableDiv").toggle();
             my_widget_script.parent_class.resize_container();
         });
 
         //when the calculate button is clicked, run the calcValues function
-        $('#calculate').click(my_widget_script.calcValues);
+        $('#calculate').click(function () {
+            my_widget_script.data_valid_form(); //run to give error, but allow to calc regardless
+            my_widget_script.calcValues();
+
+        });
 
         //when the toCSV button is clicked, run the exportTableToCSV function
         $('#toCSV').click(function () {
-            my_widget_script.exportTableToCSV('templateData', 'outTable');
+            var data_valid = my_widget_script.data_valid_form();
+            //alert(data_valid);
+            if (data_valid) {
+                my_widget_script.calcValues();
+                my_widget_script.exportTableToCSV('templateData', 'outTable');
+            }
+        });
+
+        //When the copy button is clicked, run the copyTableRow function
+        $("#copyDataButton").click(function () {
+            var data_valid = my_widget_script.data_valid_form();
+            //alert(data_valid);
+            if (data_valid) {
+                //alert("I'm clicked");
+                my_widget_script.calcValues();
+                my_widget_script.copyTableRow();
+            } else {
+                alert("Nothing was copied");
+            };
         });
 
         //When the "addDivCheck" checkbox is changed, run this function
-        $('#addDivCheck').change(function(){ //change rather than click so that it runs only when editable
+        $('#showCheck').change(function(){ //change rather than click so that it runs only when editable
           	//alert("You clicked me!");
             if( $(this).is(":checked") ){
               	//alert("I'm checked");
-                my_widget_script.createMyContent();
+                $("#myContentID").show();
             } else {
               	//alert("I'm not checked")
-                my_widget_script.removeMyContent();
+                $("#myContentID").hide();
             }
+        });
+
+        $("#addRow").click(function () {
+            var tableName = $("#exampleTable");
+
+            my_widget_script.createRow(tableName);
+        });
+
+        $("#removeRow").click(function () {
+            var tableName = ("#exampleTable");
+
+            my_widget_script.deleteRow(tableName);
         });
 
         /* -----------------------------------------------------------------------------
@@ -133,6 +163,11 @@ my_widget_script =
         ** ADD RED ASTERISKS AFTER REQUIRED FIELDS
         ** -----------------------------------------------------------------------------
         */
+
+        $('.needForTable').each(function () { //find element with class "needForForm"
+            //alert($(this).val());
+            $(this).after("<span style='color:blue'>#</span>"); //add # after
+        });
 
         //source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
         $('#the_form').find('select, textarea, input').each(function () { //find each select field, textarea, and input
@@ -151,18 +186,15 @@ my_widget_script =
 
         //Run the calculate values function to fill with the loaded data
         this.calcValues();
-      
-      	/*For this example, this would be the simpler way to recreate the dynamic content without having
-		to rely on adding additional values within to_json, since the value of the checkbox is stored
-      	//Check if the addDivChecked checkbox is checked
-      	if( $('#addDivCheck').is(":checked") ){
-        	//alert("I'm checked");
-        	my_widget_script.createMyContent();
-      	} else {
-        	//alert("I'm not checked")
-        	my_widget_script.removeMyContent();
-      	};
-		*/
+        
+        //Check initial state of checkbox
+        if( $('#showCheck').is(":checked") ){
+            //alert("I'm checked");
+          $("#myContentID").show();
+      } else {
+            //alert("I'm not checked")
+          $("#myContentID").hide();
+      }
     },
 
     to_json: function () {
@@ -187,9 +219,7 @@ my_widget_script =
         ** -----------------------------------------------------------------------------
         */
 
-        var myContent = $("#myContentID");
-        //if my content is not null and is not undefined, make existsMyContent true
-        var existsMyContent = (myContent !== null && myContent !== undefined)
+       var addedRows = $("#exampleTable").find("tbody tr").length;
 
         /* -----------------------------------------------------------------------------
         ** ADD widgetJsonString AND ADDITIONAL VARIABLES TO OUTPUT
@@ -202,7 +232,7 @@ my_widget_script =
         //var output = { widgetData: JSON.parse(widgetJsonString) };
 
         // Define additional output components
-        var output = { widgetData: JSON.parse(widgetJsonString), existsMyContent: existsMyContent };
+        var output = { widgetData: JSON.parse(widgetJsonString), addedRows: addedRows };
 
         //uncomment to check stringified output - note that complicated objects like divs cannot be passed this way
         //console.log("to JSON", JSON.stringify(output));
@@ -333,6 +363,40 @@ my_widget_script =
         //typically called have a save
         //TO DO write code specific to your form
         return this.parent_class.reset_edited();
+    },
+
+    data_valid_form: function () {
+        /* -----------------------------------------------------------------------------
+        ** VALIDATE FORM ENTRY BEFORE SAVING OR COPYING TABLE
+        **
+        ** This function will check that elements with a class "needForTable"
+        ** are not blank. If there are blank elements, it will return false
+        ** and will post an error message "Please fill out all elements marked by a blue #"
+        **
+        ** source: source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+        ** -----------------------------------------------------------------------------
+        */
+
+        var valid = true; //begin with a valid value of true
+        //var fail_log = ''; //begin with an empty fail log
+        //var name; //create a name variable
+
+        //search the_form for all elements that are of class "needForForm"
+        $('.needForTable').each(function () {
+            if (!$(this).val()) { //if there is not a value for this input
+                valid = false; //change valid to false
+                //name = $(this).attr('id'); //replace the name variable with the name attribute of this element
+                //fail_log += name + " is required \n"; //add to the fail log that this name is required
+            }
+        });
+
+        if (!valid) {
+            $("#errorMsg").html("<span style='color:red; font-size:36px;'>Please fill out all elements marked by a</span><span style='color:blue; font-size:36px;'> blue #</span>");
+        } else {
+            $("#errorMsg").html("");
+        };
+
+        return valid;
     },
 
     resize: function () {
@@ -469,36 +533,99 @@ my_widget_script =
         this.downloadCSV(csv.join("\n"), filename);
     },
 
-    createMyContent: function () {
-        /* -----------------------------------------------------------------------------
-        ** createMyContent function
-        **
-        ** This function is an example that appends new content to the form
-        ** 
-        ** my_widget_script.parent_class.resize_container(); is called at the end
-        ** -----------------------------------------------------------------------------
-        */
-        var myContent = "<div id='myContentID'>You just made me</div>";
+    copyTableRow: function () {
+        //create a temporary text area
+        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
+        $("#exampleDataRow").children().each(function () { //add each child of the row
+            $temp.text($temp.text() + $(this).text() + "\t")
+        });
 
-        $("#dynamicDiv").append(myContent); //add to the end of the dynamicDiv
-
-        //resize the container after creating or deleting or modifying content
-        my_widget_script.parent_class.resize_container();
+        $temp.appendTo($('body')).focus().select(); //add temp to body and select
+        document.execCommand("copy"); //copy the "selected" text
+        $temp.remove(); //remove temp
     },
 
-    removeMyContent: function () {
-        /* -----------------------------------------------------------------------------
-        ** removeMyContent function
-        **
-        ** This function is an example that removes content to the form
-        ** 
-        ** my_widget_script.parent_class.resize_container(); is called at the end
-        ** -----------------------------------------------------------------------------
-        */
-        $("#myContentID").remove();
+    //Use these to create template row addition examples
+    createRow: function (tableName) {
+        var rowCount = $(tableName).find("tbody tr").length + 1;
+        var rowID = "Row_" + rowCount;
 
-        //resize the container after creating or deleting or modifying content
-        my_widget_script.parent_class.resize_container();
+        var col1ID = "col1_" + rowCount;
+        var col2ID = "col2_" + rowCount;
+        var col3ID = "col3_" + rowCount;
+        var col4ID = "col4_" + rowCount;
+        var col5ID = "col5_" + rowCount;
+        var col6ID = "col6_" + rowCount;
+
+        $(tableName).find("tbody").append(
+            $('<tr/>', { //add a new row
+                id: rowID //give this row the rowID
+            }).append(
+                $('<td/>').append( //append a new td to the row
+                    $('<input/>', { //append a new input to the td
+                        id: col1ID,
+                        name: col1ID,
+                        type: "date" //make it type "date"
+                    })
+                )
+            ).append(
+                $('<td/>').append(
+                    $('<input/>', {
+                        id: col2ID,
+                        name: col2ID,
+                        type: "number"
+                    })
+                )
+            ).append(
+                $('<td/>').append(
+                    $('<input/>', {
+                        id: col3ID,
+                        name: col3ID
+                    })
+                )
+            ).append(
+                $('<td/>').append(
+                    $('<input/>', {
+                        id: col4ID,
+                        name: col4ID,
+                        type: "checkbox"
+                    })
+                )
+            ).append(
+                $('<td/>').append( //append a new td to the row
+                    $('<select/>', { //append a new select to the td
+                        id: col5ID,
+                        name: col5ID
+                    }).append( //append options to the select tag
+                        "<option value=''>[Select]</option>",
+                        "<option value='1'>Option 1</option>",
+                        "<option value='2'>Option 2</option>",
+                        "<option value='3'>Option 3</option>"
+                    )
+                )
+            ).append(
+                $('<td/>').append( //append a new td to the row
+                    //append a new text area to the script. this string has to be split to make LA happy
+                    //the widget script entry is within a text area, and if it finds another here, it 
+                    //thinks that it has reached the end of the script
+                    $('<text' + 'area></text' + 'area>', {
+                        id: col6ID,
+                        name: col6ID
+                    })
+                )
+            )
+        );
+
+        //resize the container
+        my_widget_script.resize();
+    },
+
+    deleteRow: function (tableName) {
+        var lastRow = $(tableName).find("tbody tr").last();
+        $(lastRow).remove();
+
+        //resize the container
+        my_widget_script.resize();
     }
 
     /* -----------------------------------------------------------------------------

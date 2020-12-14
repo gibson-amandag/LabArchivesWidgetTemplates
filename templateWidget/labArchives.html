@@ -23,6 +23,10 @@
 </style>
 <!-- TO DO Begin typing your HTML code here -->
 
+<p>Elements that are required to save this page are marked with a red asterisk <span style="color:red">*</span><br/>
+    Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span style="color:blue">#</span>
+</p>
+<p>&nbsp;</p>
 <div class="container">
     <div>
         Example button:
@@ -40,13 +44,17 @@
         Column B Number:
     </div>
     <div>
-        <input type="number" id="ColumnB" name="columnb" />
+        <input type="number" id="ColumnB" name="columnb" class="needForTable"/>
     </div>
 </div>
 
 <p><input id="toggleTable" name="toggletable" type="button" value="Show/Hide Table" />
     <input id="calculate" name="calcvalues" type="button" value="Calculate Values" />
     <input id="toCSV" name="tocsv" type="button" value="Save CSV" />
+    <input id="copyDataButton" name="copydatabutton" type="button" value="Copy Data" /> 
+</p>
+
+<div id="errorMsg">&nbsp;</div>
 
 <div class="tableDiv" id="tableDiv" style="display:none">
     <table border="1pt" id="outTable">
@@ -55,7 +63,7 @@
                 <th>ColumnA</th>
                 <th>ColumnB</th>
             </tr>
-            <tr>
+            <tr id="exampleDataRow">
                 <td id="ColumnA_calc">&nbsp;</td>
                 <td id="ColumnB_calc">&nbsp;</td>
             </tr>
@@ -66,6 +74,32 @@
 </div>
 
 <div id="dynamicDiv">
-    <label for="addDivCheck">Add Dynamic Content</label>
-    <input type="checkbox" id="addDivCheck" name="adddivcheck">
+    <p>&nbsp;</p>
+    <label for="showCheck">Show/hide Content</label>
+    <input type="checkbox" id="showCheck" name="showcheck">
+    <div id='myContentID' style="display: none;">I'm showing!</div>
+</div>
+
+<div id="dynamicTable">
+    <p>&nbsp;</p>
+    <h3>Add and delete table rows</h3>
+    <p><input type="button" id="addRow" name="addrow" value="Add a Row" />
+        <input type="button" id="removeRow" name="removerow" value="Remove Last Row" /></p>
+
+    <div id="exampleTableDiv" class="tableDiv">
+        <table border="1" id="exampleTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Number</th>
+                    <th>Text</th>
+                    <th>Check</th>
+                    <th>Select</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
 </div>
