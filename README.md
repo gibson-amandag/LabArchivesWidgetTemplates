@@ -12,6 +12,7 @@
   * [Script Editor](#script-editor)
 - [Save Your Widget](#save-your-widget)
 - [Deploy Your Widget](#deploy-your-widget)
+- [Edit or Develop Widgets](#edit-or-develop-widgets)
 
 ## Navigate to Widget Manager
 Within LabArchives, click on the menu in the upper right-hand corner. Look for "Widgets" and then click on "Widget Manager"
@@ -68,3 +69,16 @@ Return to the top of the page within LabArchives. By the name and description, y
   * ![Image of LabArchives showing use widget button](images/10_useWidget.png)
 * Edit the form contents, being sure to complete required fields before trying to save the Widget to the notebook
   * ![Image of LabArchives showing widget editing when added to notebook](images/11_fillContent.png)
+
+## Edit or Develop Widgets
+* The "offlineDevelopment.html" file contains both the html form elements, script, and parent form elements provided by LabArchives.
+  * [Template offlineDevelopment.html](templateWidget/offlineDevelopment.html)
+  * This can be found for other widgets by clicking the "develope offline" button within the LabArchives Script Editor
+* This file makes it easy to edit and develop widgets outside of the LabArchive environment using your prefered software. You can open then file in your browser of choice to view the appearance of the form
+* Look for the following block of code within the offlineDevelopment.html file
+```
+//call to the init function in your script.  Note that you can change the mode in the call here.
+//your choices are view,view_dev,edit,edit_dev,  see the parent class source for details
+form_script.init("edit", function() {return form_script.test_data()});
+```
+* change "edit" to either "view" "view_dev" or "edit_dev" to test how the form appears in different contexts. For example, you can ensure that the appropriate buttons are disabled during view mode. 
