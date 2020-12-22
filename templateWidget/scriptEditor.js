@@ -67,9 +67,9 @@ my_widget_script =
         if (mode !== "edit" && mode !== "edit_dev") {
             //disable when not editing
             $("#myButton").prop('disabled', true);
-              $("#calculate").prop('disabled', true);
-              $("#addRow").prop('disabled', true);
-              $("#removeRow").prop('disabled', true);
+            $("#calculate").prop('disabled', true);
+            $("#addRow").prop('disabled', true);
+            $("#removeRow").prop('disabled', true);
         };
 
         /* -----------------------------------------------------------------------------
@@ -128,13 +128,13 @@ my_widget_script =
         });
 
         //When the "addDivCheck" checkbox is changed, run this function
-        $('#showCheck').change(function(){ //change rather than click so that it runs only when editable
-          	//alert("You clicked me!");
-            if( $(this).is(":checked") ){
-              	//alert("I'm checked");
+        $('#showCheck').change(function () { //change rather than click so that it runs only when editable
+            //alert("You clicked me!");
+            if ($(this).is(":checked")) {
+                //alert("I'm checked");
                 $("#myContentID").show();
             } else {
-              	//alert("I'm not checked")
+                //alert("I'm not checked")
                 $("#myContentID").hide();
             }
         });
@@ -178,7 +178,7 @@ my_widget_script =
 
         /* -----------------------------------------------------------------------------
         ** ADD ADDITIONAL FUNCTIONS AND STEPS THAT SHOULD BE TAKEN TO INITIALIZE HTML
-
+    
         ** For example, ensure that shown/hiden elements are properly displayed
         ** based on the contents of the form
         ** -----------------------------------------------------------------------------
@@ -186,15 +186,15 @@ my_widget_script =
 
         //Run the calculate values function to fill with the loaded data
         this.calcValues();
-        
+
         //Check initial state of checkbox
-        if( $('#showCheck').is(":checked") ){
+        if ($('#showCheck').is(":checked")) {
             //alert("I'm checked");
-          $("#myContentID").show();
-      } else {
+            $("#myContentID").show();
+        } else {
             //alert("I'm not checked")
-          $("#myContentID").hide();
-      }
+            $("#myContentID").hide();
+        }
     },
 
     to_json: function () {
@@ -208,7 +208,7 @@ my_widget_script =
         ** This uses LabArchives's to_json() function to get the form data as a string
         ** -----------------------------------------------------------------------------
         */
-        
+
         var widgetJsonString = this.parent_class.to_json();
 
         /* -----------------------------------------------------------------------------
@@ -219,7 +219,7 @@ my_widget_script =
         ** -----------------------------------------------------------------------------
         */
 
-       var addedRows = $("#exampleTable").find("tbody tr").length;
+        var addedRows = $("#exampleTable").find("tbody tr").length;
 
         /* -----------------------------------------------------------------------------
         ** ADD widgetJsonString AND ADDITIONAL VARIABLES TO OUTPUT
@@ -241,7 +241,7 @@ my_widget_script =
         ** RETURN STRINGIFIED OUTPUT
         ** -----------------------------------------------------------------------------
         */
-        
+
         return JSON.stringify(output);
     },
 
@@ -266,7 +266,7 @@ my_widget_script =
         ** radio buttons, and checkboxes
         ** -----------------------------------------------------------------------------
         */
-        
+
         //return this.parent_class.test_data();
 
         /* -----------------------------------------------------------------------------
@@ -281,19 +281,19 @@ my_widget_script =
 
         //store the outcome of the the test data within the testData variable
         var testData = JSON.parse(this.parent_class.test_data());
-      	
-      	//find out what the random check was
-      	var addDivCheckVal = testData[1].value; //the second value in the array is the addDivCheck info
-      	var isCheckedAddDiv = false; //start with this isChecked variable as false
-      	if( addDivCheckVal !== "") { //if addDivCheckVal is not empty ("")
-        	isCheckedAddDiv = true; //change isCheckedAddDiv to true
-      	};
-        
+
+        //find out what the random check was
+        var addDivCheckVal = testData[1].value; //the second value in the array is the addDivCheck info
+        var isCheckedAddDiv = false; //start with this isChecked variable as false
+        if (addDivCheckVal !== "") { //if addDivCheckVal is not empty ("")
+            isCheckedAddDiv = true; //change isCheckedAddDiv to true
+        };
+
         //If no additional dynamic content 
         //var output = { widgetData: testData };
 
         //The additional content should match the objects in to_json
-        var output = { widgetData: testData, existsMyContent: isCheckedAddDiv};
+        var output = { widgetData: testData, existsMyContent: isCheckedAddDiv };
 
         //return the stringified output for use by the init function
         return JSON.stringify(output);
@@ -324,7 +324,7 @@ my_widget_script =
         var name; //create a name variable
 
         //search the_form for all elements that are of type select, textarea, or input
-        $('#the_form').find('select, textarea, input').each(function () { 
+        $('#the_form').find('select, textarea, input').each(function () {
             if (!$(this).prop('required')) { //if this element does not have a required attribute
                 //don't change anything (fail remains false)
             } else { //if there is a required attribute
@@ -350,7 +350,7 @@ my_widget_script =
         ** This checks for fields that have _mandatory appended to the name attribute
         ** -----------------------------------------------------------------------------
         */
-        
+
         //return this.parent_class.is_valid(b_suppress_message);
     },
 
@@ -412,7 +412,7 @@ my_widget_script =
         ** content is created, modified, or deleted within a function.
         ** -----------------------------------------------------------------------------
         */
-        
+
         //gets the inner width of the window.
         var width = window.innerWidth;
 
@@ -454,8 +454,8 @@ my_widget_script =
         $("#outTable tr").each(function () { //for each row
             $("td", this).each(function () { //for each cell
                 var value = $(this).text(); //get the value of the text
-                if ( value === "" || value === "NaN" ) { //if blank or NaN
-                    $( this ).text("NA"); //make NA
+                if (value === "" || value === "NaN") { //if blank or NaN
+                    $(this).text("NA"); //make NA
                 }
             })
         });
@@ -589,6 +589,12 @@ my_widget_script =
                         id: col4ID,
                         name: col4ID,
                         type: "checkbox"
+                    }).change(function () { //make the background color of the row grey when checked
+                        if ($(this).is(":checked")) {
+                            $(this).closest("tr").css("background-color", "lightgrey");
+                        } else {
+                            $(this).closest("tr").css("background-color", "");
+                        }
                     })
                 )
             ).append(
@@ -598,10 +604,25 @@ my_widget_script =
                         name: col5ID
                     }).append( //append options to the select tag
                         "<option value=''>[Select]</option>",
-                        "<option value='1'>Option 1</option>",
-                        "<option value='2'>Option 2</option>",
-                        "<option value='3'>Option 3</option>"
-                    )
+                        "<option value='1'>Green</option>",
+                        "<option value='2'>Blue</option>",
+                        "<option value='3'>Red</option>"
+                    ).change(function () { //change the background color
+                        switch ($(this).val()) {
+                            case '':
+                                $(this).css("background-color", "");
+                                break;
+                            case "1":
+                                $(this).css("background-color", "lightgreen");
+                                break;
+                            case "2":
+                                $(this).css("background-color", "skyblue");
+                                break;
+                            case "3":
+                                $(this).css("background-color", "lightpink");
+                                break;
+                        };
+                    })
                 )
             ).append(
                 $('<td/>').append( //append a new td to the row
@@ -611,7 +632,7 @@ my_widget_script =
                     $('<text' + 'area></text' + 'area>', {
                         id: col6ID,
                         name: col6ID
-                    })
+                    }).css("margin", "5px")
                 )
             )
         );
@@ -637,6 +658,6 @@ my_widget_script =
     ** content is created, modified, or deleted within a function.
     ** -----------------------------------------------------------------------------
     */
-    
 
-}
+
+};
