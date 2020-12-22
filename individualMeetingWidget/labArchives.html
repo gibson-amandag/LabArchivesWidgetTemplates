@@ -1,0 +1,58 @@
+<style type="text/css">/* TO DO Place css styling code here */
+
+    /* Add this class to a div to all for flex wrapping */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    /* Each div takes of 50% of width. Creates two columns within the container */
+    .container>div {
+        flex: 0 50%;
+        margin-bottom: 5px;
+    }
+    
+    /* Add this class to a div around tables. The script will automatically change the width to match the window
+    Adds a scroll bar when the content is too big for the width */
+    .tableDiv {
+        width: 400px;
+        overflow-x: scroll;
+    
+    }
+    
+    .spacing>div{
+        margin-bottom: 5px;
+    }
+    </style>
+    <!-- TO DO Begin typing your HTML code here -->
+    
+    <h3>Individual Meeting</h3>
+    <div class="spacing">
+    <div><span style="font-weight: bold;">Date:</span> <input id="date" name="date" type="date"/></div>
+    <div><span style="font-weight: bold;">Supervisor(s) and/or Attendee(s):</span> <br/><textarea id="who" name="who" cols="50" rows="1"></textarea></div>
+    <div>
+        <p><input id="addRow" name="addrow" type="button" value="Add a Row" /> <input id="removeRow" name="removerow" type="button" value="Remove Last Row" /></p>
+    
+        <div class="tableDiv" id="discussionTableDiv">
+        <table border="1" id="discussionTable">
+        <thead>
+            <tr>
+                <th>Discussed</th>
+                <th>Topic</th>
+                <th>Info</th>
+                <th>Follow-up</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+        </table>
+        </div>
+    </div>
+    <div>
+        <span style="font-weight: bold;">Other Notes:</span><br/>
+        <textarea id="otherNotes" name="othernotes" cols="50" rows="5"></textarea>
+    </div>
+    <div>
+        <span style="font-weight: bold;">Next Meeting Date:</span> <input id="nextDate" name="nextdate" type="date"/>
+    </div>
+    </div>
