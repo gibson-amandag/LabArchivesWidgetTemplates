@@ -1,0 +1,47 @@
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* Add this class to a div to all for flex wrapping */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    /* Each div takes of 50% of width. Creates two columns within the container */
+    .container>div {
+        flex: 0 50%;
+        margin-bottom: 5px;
+    }
+
+    /* Add this class to a div around tables. The script will automatically change the width to match the window
+    Adds a scroll bar when the content is too big for the width */
+    .tableDiv {
+        width: 400px;
+        overflow-x: scroll;
+
+    }
+</style>
+<!-- TO DO Begin typing your HTML code here -->
+<h3>To-Do List</h3>
+<textarea id="focus">Focus</textarea>
+
+<h3>Add and delete table rows</h3>
+
+<p><input id="addRow" name="addrow" type="button" value="Add a Row" /> <input id="removeRow" name="removerow"
+        type="button" value="Remove Last Row" /></p>
+<div class="tableDiv" id="toDoTableDiv">
+    <table border="1" id="toDoTable">
+        <thead>
+            <tr>
+                <th>Start Date</th>
+                <th>Due Date</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Description</th>
+                <th>Comment</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>
