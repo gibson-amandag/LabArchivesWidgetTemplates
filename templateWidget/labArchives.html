@@ -1,7 +1,7 @@
 <style type="text/css">
     /* TO DO Place css styling code here */
 
-    /* Add this class to a div to all for flex wrapping */
+    /* Add this class to a div for flex wrapping */
     .container {
         display: flex;
         flex-wrap: wrap;
@@ -14,7 +14,7 @@
     }
 
     /* Add this class to a div around tables. The script will automatically change the width to match the window
-    Adds a scroll bar when the content is too big for the width */
+Adds a scroll bar when the content is too big for the width */
     .tableDiv {
         width: 400px;
         overflow-x: scroll;
@@ -22,47 +22,41 @@
     }
 </style>
 <!-- TO DO Begin typing your HTML code here -->
+<p>Elements that are required to save this page are marked with a red asterisk <span style="color:red">*</span><br />
+    Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span
+        style="color:blue">#</span></p>
 
-<p>Elements that are required to save this page are marked with a red asterisk <span style="color:red">*</span><br/>
-    Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span style="color:blue">#</span>
-</p>
 <p>&nbsp;</p>
+
 <div class="container">
-    <div>
-        Example button:
-    </div>
-    <div>
-        <input type="button" id="myButton" name="mybutton" value="Click Me!" />
-    </div>
-    <div>
-        Column A Text:
-    </div>
-    <div>
-        <input id="ColumnA" name="columna" required />
-    </div>
-    <div>
-        Column B Number:
-    </div>
-    <div>
-        <input type="number" id="ColumnB" name="columnb" class="needForTable"/>
-    </div>
+    <div>Example button:</div>
+
+    <div><input id="myButton" name="mybutton" type="button" value="Click Me!" /></div>
+
+    <div>Column A Text:</div>
+
+    <div><input id="ColumnA" name="columna" required="" /></div>
+
+    <div>Column B Number:</div>
+
+    <div><input class="needForTable" id="ColumnB" name="columnb" type="number" /></div>
 </div>
 
-<p><input id="toggleTable" name="toggletable" type="button" value="Show/Hide Table" />
-    <input id="calculate" name="calcvalues" type="button" value="Calculate Values" />
-    <input id="toCSV" name="tocsv" type="button" value="Save CSV" />
-    <input id="copyDataButton" name="copydatabutton" type="button" value="Copy Data" /> 
-</p>
+<p><input id="toggleTable" name="toggletable" type="button" value="Show/Hide Table" /> <input id="calculate"
+        name="calcvalues" type="button" value="Calculate Values" /> <input id="toCSV" name="tocsv" type="button"
+        value="Save CSV" /> <input id="copyDataButton" name="copydatabutton" type="button" value="Copy Data" /></p>
 
 <div id="errorMsg">&nbsp;</div>
 
 <div class="tableDiv" id="tableDiv" style="display:none">
     <table border="1pt" id="outTable">
-        <tbody>
+        <thead>
             <tr>
                 <th>ColumnA</th>
                 <th>ColumnB</th>
             </tr>
+        </thead>
+        <tbody>
             <tr id="exampleDataRow">
                 <td id="ColumnA_calc">&nbsp;</td>
                 <td id="ColumnB_calc">&nbsp;</td>
@@ -75,18 +69,19 @@
 
 <div id="dynamicDiv">
     <p>&nbsp;</p>
-    <label for="showCheck">Show/hide Content</label>
-    <input type="checkbox" id="showCheck" name="showcheck">
-    <div id='myContentID' style="display: none;">I'm showing!</div>
+    <label for="showCheck">Show/hide Content</label> <input id="showCheck" name="showcheck" type="checkbox" />
+    <div id="myContentID" style="display: none;">I&#39;m showing!</div>
 </div>
 
 <div id="dynamicTable">
     <p>&nbsp;</p>
-    <h3>Add and delete table rows</h3>
-    <p><input type="button" id="addRow" name="addrow" value="Add a Row" />
-        <input type="button" id="removeRow" name="removerow" value="Remove Last Row" /></p>
 
-    <div id="exampleTableDiv" class="tableDiv">
+    <h3>Add and delete table rows</h3>
+
+    <p><input id="addRow" name="addrow" type="button" value="Add a Row" /> <input id="removeRow" name="removerow"
+            type="button" value="Remove Last Row" /></p>
+
+    <div class="tableDiv" id="exampleTableDiv">
         <table border="1" id="exampleTable">
             <thead>
                 <tr>

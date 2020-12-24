@@ -120,7 +120,9 @@ my_widget_script =
             //alert(data_valid);
             if (data_valid) {
                 //alert("I'm clicked");
+                my_widget_script.resize();
                 my_widget_script.calcValues();
+                $("#tableDiv").show();
                 my_widget_script.copyTableRow();
             } else {
                 alert("Nothing was copied");
@@ -248,7 +250,7 @@ my_widget_script =
     from_json: function (json_data) {
         //populates the form with json_data
 
-        // all data into string format within json_data is parsed into an object parsedJson
+        // all data in string format within json_data is parsed into an object parsedJson
         var parsedJson = JSON.parse(json_data);
 
         //use parsedJson to get widgetData and turn into a string
@@ -282,18 +284,12 @@ my_widget_script =
         //store the outcome of the the test data within the testData variable
         var testData = JSON.parse(this.parent_class.test_data());
 
-        //find out what the random check was
-        var addDivCheckVal = testData[1].value; //the second value in the array is the addDivCheck info
-        var isCheckedAddDiv = false; //start with this isChecked variable as false
-        if (addDivCheckVal !== "") { //if addDivCheckVal is not empty ("")
-            isCheckedAddDiv = true; //change isCheckedAddDiv to true
-        };
-
         //If no additional dynamic content 
         //var output = { widgetData: testData };
 
         //The additional content should match the objects in to_json
-        var output = { widgetData: testData, existsMyContent: isCheckedAddDiv };
+        //When in development, initialize with 2 addedRows
+        var output = { widgetData: testData, addedRows: 2 };
 
         //return the stringified output for use by the init function
         return JSON.stringify(output);
@@ -315,7 +311,7 @@ my_widget_script =
         ** are not blank. If there are blank elements, it will return an alert that
         ** provides a fail log with the ids of the elements that are missing
         **
-        ** source: source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+        ** source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
         ** -----------------------------------------------------------------------------
         */
 
@@ -373,7 +369,7 @@ my_widget_script =
         ** are not blank. If there are blank elements, it will return false
         ** and will post an error message "Please fill out all elements marked by a blue #"
         **
-        ** source: source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+        ** source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
         ** -----------------------------------------------------------------------------
         */
 
@@ -385,7 +381,7 @@ my_widget_script =
         $('.needForTable').each(function () {
             if (!$(this).val()) { //if there is not a value for this input
                 valid = false; //change valid to false
-                //name = $(this).attr('id'); //replace the name variable with the name attribute of this element
+                //name = $(this).attr('id'); //replace the name variable with the id attribute of this element
                 //fail_log += name + " is required \n"; //add to the fail log that this name is required
             }
         });
@@ -523,8 +519,10 @@ my_widget_script =
         for (var i = 0; i < rows.length; i++) {
             var row = [], cols = rows[i].querySelectorAll("td, th");
 
-            for (var j = 0; j < cols.length; j++)
-                row.push(cols[j].innerText);
+            for (var j = 0; j < cols.length; j++) {
+                var cellText = '"' + cols[j].innerText + '"'; //add to protect from commas within cell
+                row.push(cellText);
+            };
 
             csv.push(row.join(","));
         }
@@ -536,11 +534,23 @@ my_widget_script =
     copyTableRow: function () {
         //create a temporary text area
         var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
-        $("#exampleDataRow").children().each(function () { //add each child of the row
-            $temp.text($temp.text() + $(this).text() + "\t")
+
+        $("#outTable tbody").children("tr").each(function () { //add each child of the row
+            var addTab = "";
+            $(this).find("td").each(function () {
+                //alert($(this).text());
+                if ($(this).text()) {
+                    var addText = $(this).text();
+                } else {
+                    var addText = "NA"
+                }
+                $temp.text($temp.text() + addTab + addText);
+                addTab = "\t";
+                //alert($temp.text());
+            });
         });
 
-        $temp.appendTo($('body')).focus().select(); //add temp to body and select
+        $temp.appendTo($('#tableDiv')).focus().select(); //add temp to tableDiv and select
         document.execCommand("copy"); //copy the "selected" text
         $temp.remove(); //remove temp
     },
@@ -660,4 +670,5 @@ my_widget_script =
     */
 
 
-};
+}
+    ;
