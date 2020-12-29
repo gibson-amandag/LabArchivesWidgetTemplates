@@ -55,7 +55,7 @@ my_widget_script =
         var addedRows = this.getDynamicContent();
 
         // Add widgetData and any additional dynamic content to an output object
-        // Will be accessed within the init and from_json functions
+        // Will be accessed within the init and from_json methods
         var output = { widgetData: JSON.parse(widgetJsonString), addedRows: addedRows };
 
         //uncomment to check stringified output
@@ -149,7 +149,7 @@ my_widget_script =
         } else {
             var noErrors = [];
             return noErrors;
-        }; //otherwise, return empty array
+        } //otherwise, return empty array
     },
 
     is_edited: function () {
@@ -163,7 +163,7 @@ my_widget_script =
         return this.parent_class.reset_edited();
     },
 
-    // ********************** CUSTOM FUNCTIONS USED BY INIT FUNCTION **********************
+    // ********************** CUSTOM METHODS USED BY INIT METHOD **********************
     parseInitJson: function (json_data) {
         var jsonString;
         //check if string or function because preview test is function and page is string
@@ -171,7 +171,7 @@ my_widget_script =
             jsonString = json_data;
         } else {
             jsonString = json_data();
-        };
+        }
         //Take input string into js object to be able to use elsewhere
         var parsedJson = JSON.parse(jsonString);
         return (parsedJson);
@@ -207,7 +207,7 @@ my_widget_script =
             $("#calculate").prop('disabled', true);
             $("#addRow").prop('disabled', true);
             $("#removeRow").prop('disabled', true);
-        };
+        }
     },
 
     /**
@@ -216,10 +216,12 @@ my_widget_script =
      */
     addEventListeners: function () {
         //Run my button function when clicked
-        $('#myButton').click(my_widget_script.myButtonFunc);
+        $('#myButton').on("click", function () {
+            my_widget_script.myButtonFunc();
+        });
 
         //Show/hide the table
-        $("#toggleTable").click(function () { //when the showTable button is clicked. Run this function
+        $("#toggleTable").on("click", function () { //when the showTable button is clicked. Run this function
             //alert("button pressed");
             my_widget_script.resize();
             my_widget_script.data_valid_form(); //run to give error, but allow to calc regardless
@@ -229,14 +231,14 @@ my_widget_script =
         });
 
         //when the calculate button is clicked, run the calcValues function
-        $('#calculate').click(function () {
+        $('#calculate').on("click", function () {
             my_widget_script.data_valid_form(); //run to give error, but allow to calc regardless
             my_widget_script.calcValues();
 
         });
 
         //when the toCSV button is clicked, run the exportTableToCSV function
-        $('#toCSV').click(function () {
+        $('#toCSV').on("click", function () {
             var data_valid = my_widget_script.data_valid_form();
             //alert(data_valid);
             if (data_valid) {
@@ -246,7 +248,7 @@ my_widget_script =
         });
 
         //When the copy button is clicked, run the copyTableRow function
-        $("#copyDataButton").click(function () {
+        $("#copyDataButton").on("click", function () {
             var data_valid = my_widget_script.data_valid_form();
             //alert(data_valid);
             if (data_valid) {
@@ -257,11 +259,11 @@ my_widget_script =
                 my_widget_script.copyTableRow();
             } else {
                 alert("Nothing was copied");
-            };
+            }
         });
 
         //When the "addDivCheck" checkbox is changed, run this function
-        $('#showCheck').change(function () { //change rather than click so that it runs only when editable
+        $('#showCheck').on("change", function () { //change rather than click so that it runs only when editable
             //alert("You clicked me!");
             if ($(this).is(":checked")) {
                 //alert("I'm checked");
@@ -272,16 +274,32 @@ my_widget_script =
             }
         });
 
-        $("#addRow").click(function () {
+        $("#addRow").on("click", function () {
             var tableName = $("#exampleTable");
 
             my_widget_script.createRow(tableName);
         });
 
-        $("#removeRow").click(function () {
+        $("#removeRow").on("click", function () {
             var tableName = ("#exampleTable");
 
             my_widget_script.deleteRow(tableName);
+        });
+
+        $("#numDays").on("input", function () {
+            if ($("#startDate").val()) {
+                my_widget_script.addDays($("#numDays").val());
+            } else {
+                $("#newDate").text("Enter start date")
+            }
+        });
+
+        $("#startDate").on("input", function () {
+            if ($("#numDays").val()) {
+                my_widget_script.addDays($("#numDays").val());
+            } else {
+                $("#newDate").text("Enter number of days")
+            }
         });
     },
 
@@ -312,7 +330,7 @@ my_widget_script =
      * widget already has data entered, such as when saved to a page.
      */
     setUpInitialState: function () {
-        //Run the calculate values function to fill with the loaded data
+        //Run the calculate values method to fill with the loaded data
         this.calcValues();
 
         //Check initial state of checkbox
@@ -325,27 +343,41 @@ my_widget_script =
         };
 
         //row background based on check
-        if ($('.rowCheck').is(':checked')) {
-            $(this).closest("tr").css("background-color", "lightgrey");
-        } else {
-            $(this).closest("tr").css("background-color", "");
-        };
+        $('.rowCheck').each(function () {
+            if ($(this).is(':checked')) {
+                $(this).closest("tr").css("background-color", "lightgrey");
+            } else {
+                $(this).closest("tr").css("background-color", "");
+            }
+        });
 
-        //row select background based on selection
-        switch ($('.rowSelect').val()) {
-            case '':
-                $(this).css("background-color", "");
-                break;
-            case "1":
-                $(this).css("background-color", "lightgreen");
-                break;
-            case "2":
-                $(this).css("background-color", "skyblue");
-                break;
-            case "3":
-                $(this).css("background-color", "lightpink");
-                break;
-        };
+        //row select background based on selectio
+        $('.rowSelect').each(function () {
+            switch ($(this).val()) {
+                case '':
+                    $(this).css("background-color", "");
+                    break;
+                case "1":
+                    $(this).css("background-color", "lightgreen");
+                    break;
+                case "2":
+                    $(this).css("background-color", "skyblue");
+                    break;
+                case "3":
+                    $(this).css("background-color", "lightpink");
+                    break;
+            }
+        });
+
+        //Print new date
+        if ($("#numDays").val() && $("#startDate").val()) {
+            my_widget_script.addDays();
+        } else if (!$("#numDays")) {
+            $("#newDate").text("Enter number of days");
+        } else {
+            $("#newDate").text("Enter start date")
+        }
+
     },
 
     /**
@@ -362,10 +394,10 @@ my_widget_script =
         //resize the container
         my_widget_script.parent_class.resize_container();
     },
-    // ********************** END CUSTOM INIT FUNCTIONS **********************
+    // ********************** END CUSTOM INIT METHODS **********************
 
 
-    // ********************** START CUSTOM TO_JSON FUNCTIONS **********************
+    // ********************** START CUSTOM TO_JSON METHODS **********************
     getDynamicContent: function () {
         // These should be simple variables, such as true/false, a number, or a state
         // This cannot be something complex like a full <div>
@@ -373,7 +405,7 @@ my_widget_script =
         var addedRows = $("#exampleTable").find("tbody tr").length;
         return addedRows;
     },
-    // ********************** END CUSTOM TO_JSON FUNCTIONS **********************
+    // ********************** END CUSTOM TO_JSON METHODS **********************
 
     /** -----------------------------------------------------------------------------
      * VALIDATE FORM ENTRY BEFORE COPYING OR SAVING TABLE TO CSV
@@ -403,7 +435,7 @@ my_widget_script =
             $("#errorMsg").html("<span style='color:red; font-size:36px;'>Please fill out all elements marked by a</span><span style='color:blue; font-size:36px;'> blue #</span>");
         } else {
             $("#errorMsg").html("");
-        };
+        }
 
         return valid;
     },
@@ -606,12 +638,12 @@ my_widget_script =
                         name: col4ID,
                         type: "checkbox",
                         "class": "rowCheck"
-                    }).change(function () { //make the background color of the row grey when checked
+                    }).on("change", function () { //make the background color of the row grey when checked
                         if ($(this).is(":checked")) {
                             $(this).closest("tr").css("background-color", "lightgrey");
                         } else {
                             $(this).closest("tr").css("background-color", "");
-                        };
+                        }
                     })
                 )
             ).append(
@@ -625,7 +657,7 @@ my_widget_script =
                         "<option value='1'>Green</option>",
                         "<option value='2'>Blue</option>",
                         "<option value='3'>Red</option>"
-                    ).change(function () { //change the background color
+                    ).on("change", function () { //change the background color
                         switch ($(this).val()) {
                             case '':
                                 $(this).css("background-color", "");
@@ -639,7 +671,7 @@ my_widget_script =
                             case "3":
                                 $(this).css("background-color", "lightpink");
                                 break;
-                        };
+                        }
                     })
                 )
             ).append(
@@ -670,17 +702,33 @@ my_widget_script =
 
         //resize the container
         my_widget_script.resize();
+    },
+
+    addDays: function (numDays) {
+        //debugger;
+        var dateString = $("#startDate").val(); //get the date string from the input
+
+        var startDate = new Date(dateString);
+
+        var offset = new Date().getTimezoneOffset(); //get the offset of local time from GTC
+        // this is necessary because making a Date object from the input date string creates a date with time of midnight GTC
+        // for locales with different time zones, this means that the Date displayed could be the previous day
+
+        //Add the number of days (in ms) and offset (in ms) to the start Date (in ms) and make it a new date object
+        var newDate = new Date(startDate.getTime() + numDays * 24 * 60 * 60 * 1000 + offset * 60 * 1000);
+
+        $("#newDate").text(newDate.toDateString());
     }
 
     /* -----------------------------------------------------------------------------
-    ** DEFINE ADDITIONAL FUNCTIONS HERE
+    ** DEFINE ADDITIONAL METHODS HERE
     **
-    ** Be sure that there is a comma after previous function
+    ** Be sure that there is a comma after previous method
     **
     ** my_widget_script.parent_class.resize_container(); should be called each time
     ** content is created, modified, or deleted within a function.
     ** -----------------------------------------------------------------------------
     */
 
-
-};
+}
+    ;

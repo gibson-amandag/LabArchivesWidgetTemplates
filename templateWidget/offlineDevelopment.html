@@ -273,7 +273,9 @@ adjustForMode: function (mode) {
  */ 
 addEventListeners: function () {
     //Run my button function when clicked
-    $('#myButton').on("click", "my_widget_script.myButtonFunc");
+    $('#myButton').on("click", function() {
+        my_widget_script.myButtonFunc();
+    });
 
     //Show/hide the table
     $("#toggleTable").on("click", function () { //when the showTable button is clicked. Run this function
@@ -759,16 +761,6 @@ deleteRow: function (tableName) {
     my_widget_script.resize();
 },
 
-/* -----------------------------------------------------------------------------
-** DEFINE ADDITIONAL METHODS HERE
-**
-** Be sure that there is a comma after previous method
-**
-** my_widget_script.parent_class.resize_container(); should be called each time
-** content is created, modified, or deleted within a function.
-** -----------------------------------------------------------------------------
-*/
-
 addDays: function (numDays) {
     //debugger;
     var dateString = $("#startDate").val(); //get the date string from the input
@@ -784,8 +776,15 @@ addDays: function (numDays) {
 
     $("#newDate").text(newDate.toDateString());
 }
-
-
+/* -----------------------------------------------------------------------------
+** DEFINE ADDITIONAL METHODS HERE
+**
+** Be sure that there is a comma after previous method
+**
+** my_widget_script.parent_class.resize_container(); should be called each time
+** content is created, modified, or deleted within a function.
+** -----------------------------------------------------------------------------
+*/
 
 }
 ;
@@ -918,7 +917,7 @@ Elements that are required to copy the table or save to CSV are marked with a bl
     <h3>Add Days to a Date Input</h3>
     Select date: <input type="date" id="startDate" name="startdate"/><br/>
     Add days: <input type="number" id="numDays" name="numdays"/><br/>
-    New date: <span id="newDate"></span>
+    New date: <span id="newDate">--</span>
 </div>
 
 <!------------------------------------------------------------------------------------------>
