@@ -1,0 +1,148 @@
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* Add this class to a div around tables. The script will automatically change the width to match the window
+    Adds a scroll bar when the content is too big for the width */
+    .tableDiv {
+        width: 400px;
+        overflow-x: scroll;
+    }
+
+    table {
+        border: 2px solid black;
+    }
+
+    th {
+        padding: 5px;
+        border: 2px solid black;
+    }
+
+    td {
+        padding: 5px;
+        border: 1px solid black;
+    }
+</style>
+<!-- jQuery updated for bootstrap - added in init -->
+<script id="jQueryScript" crossorigin="anonymous" type="text/javascript"></script><!-- Bootstrap style sheets -->
+<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet" />
+<!-- Bootstrap JS - added in init -->
+<script id="bootstrapJS" crossorigin="anonymous"></script><!-- TO DO Begin typing your HTML code here -->
+<div class="container">
+    <p>Elements that are required to save this page are marked with a red asterisk <span
+            style="color:red">*</span><br />
+        Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span
+            style="color:blue">#</span></p>
+</div>
+
+<div class="container">
+    <h3>Create an output table based on input</h3>
+
+    <div class="row align-items-end">
+        <div class="myLeftCol">Example button:</div>
+        <!-- myLeftCol adds additional classes in init function-->
+
+        <div class="col"><input id="myButton" name="mybutton" type="button" value="Click Me!" /></div>
+    </div>
+
+    <div class="row align-items-end mt-2">
+        <div class="myLeftCol">Column A Text:</div>
+
+        <div class="col"><input id="ColumnA" name="columna" required="" /></div>
+    </div>
+
+    <div class="row align-items-end mt-2">
+        <div class="myLeftCol">Column B Number:</div>
+
+        <div class="col"><input class="needForTable" id="ColumnB" name="columnb" type="number" /></div>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div class="row mt-2">
+        <div class="col col-lg-2"><input id="toggleTable" name="toggletable" type="button" value="Show/Hide Table" />
+        </div>
+
+        <div class="col col-lg-2"><input id="calculate" name="calcvalues" type="button" value="Calculate Values" />
+        </div>
+
+        <div class="col col-lg-2"><input id="toCSV" name="tocsv" type="button" value="Save CSV" /></div>
+
+        <div class="col col-lg-2"><input id="copyDataButton" name="copydatabutton" type="button" value="Copy Data" />
+        </div>
+    </div>
+</div>
+
+<div class="container" id="errorMsg">&nbsp;</div>
+
+<div class="container tableDiv mt-2" id="tableDiv" style="display:none">
+    <table border="1pt" id="outTable">
+        <thead>
+            <tr>
+                <th>ColumnA</th>
+                <th>ColumnB</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr id="exampleDataRow">
+                <td id="ColumnA_calc">&nbsp;</td>
+                <td id="ColumnB_calc">&nbsp;</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>&nbsp;</p>
+</div>
+
+<div class="container mt-2" id="dynamicDiv">
+    <h3>Show and Hide Content</h3>
+    <label for="showCheck">Show/hide Content</label> <input id="showCheck" name="showcheck" type="checkbox" />
+    <div id="myContentID" style="display: none;"><span style="color:darkblue">I&#39;m showing!</span></div>
+</div>
+
+<div class="container mt-2" id="dynamicTable">
+    <h3>Add and delete table rows</h3>
+
+    <p><input id="addRow" name="addrow" type="button" value="Add a Row" /> <input id="removeRow" name="removerow"
+            type="button" value="Remove Last Row" /></p>
+
+    <div class="tableDiv" id="exampleTableDiv">
+        <table id="exampleTable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Number</th>
+                    <th>Text</th>
+                    <th>Check</th>
+                    <th>Select</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <h3>Add Days to a Date Input</h3>
+
+    <div class="row align-items-end">
+        <div class="myLeftCol">Select date:</div>
+        <!-- myLeftCol adds additional classes in init function-->
+
+        <div class="col"><input id="startDate" name="startdate" type="date" /></div>
+    </div>
+
+    <div class="row align-items-end mt-2">
+        <div class="myLeftCol">Add days:</div>
+
+        <div class="col"><input id="numDays" name="numdays" type="number" /></div>
+    </div>
+
+    <div class="row align-items-end mt-2">
+        <div class="myLeftCol">New date:</div>
+
+        <div class="col" id="newDate">&nbsp;</div>
+    </div>
+</div>
