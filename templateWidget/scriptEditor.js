@@ -77,10 +77,10 @@ my_widget_script =
     },
 
     /**
-     * In preview, the form is populated with test data when the
-     * parent_class.test_data() function is called. This randomly selects options for 
-     * dropdown select menus, radio buttons, and checkboxes.
-     */
+    * In preview, the form is populated with test data when the
+    * parent_class.test_data() function is called. This randomly selects options for 
+    * dropdown select menus, radio buttons, and checkboxes.
+    */
     test_data: function () {
         //during development this method is called to populate your form while in preview mode
 
@@ -103,16 +103,16 @@ my_widget_script =
     },
 
     /**
-     * This function determines whether or not the user is allowed to save the widget to the page
-     * 
-     * The original LabArchives function checks for fields that have _mandatory appended to the name attribute
-     * 
-     * The custom function checks for fields with the required attribute. If any of these fields are blank, 
-     * an alert is returns that provides a fail log with the ids of the elements that are missing. If there are
-     * no blank required fields, an empty array is returned.
-     * 
-     * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
-     */
+    * This function determines whether or not the user is allowed to save the widget to the page
+    * 
+    * The original LabArchives function checks for fields that have _mandatory appended to the name attribute
+    * 
+    * The custom function checks for fields with the required attribute. If any of these fields are blank, 
+    * an alert is returns that provides a fail log with the ids of the elements that are missing. If there are
+    * no blank required fields, an empty array is returned.
+    * 
+    * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+    */
     is_valid: function (b_suppress_message) {
         //called when the user hits the save button, to allow for form validation.
         //returns an array of dom elements that are not valid - default is those elements marked as mandatory
@@ -178,14 +178,14 @@ my_widget_script =
     },
 
     /**
-     * TO DO: edit this function to reinitialize any dynamic content that is not explicity
-     * defined within the HTML code. 
-     * 
-     * This function requires the parsedJson object.
-     * 
-     * Here, we are getting the number of addedRows (defined in to_json) from the parsedJson 
-     * object and then using the createRow function to remake those rows
-     */
+    * TO DO: edit this function to reinitialize any dynamic content that is not explicity
+    * defined within the HTML code. 
+    * 
+    * This function requires the parsedJson object.
+    * 
+    * Here, we are getting the number of addedRows (defined in to_json) from the parsedJson 
+    * object and then using the createRow function to remake those rows
+    */
     initDynamicContent: function (parsedJson) {
         for (var i = 0; i < parsedJson.addedRows; i++) {
             var tableName = $("#exampleTable");
@@ -194,12 +194,12 @@ my_widget_script =
     },
 
     /**
-     * TO DO: edit this function to define how the HTML elements should be adjusted
-     * based on the current mode.
-     * 
-     * Here, a subset of buttons are disabled when the widget is not being edited.
-     * There may be other elements that should be shown/hidden based on the mode
-     */
+    * TO DO: edit this function to define how the HTML elements should be adjusted
+    * based on the current mode.
+    * 
+    * Here, a subset of buttons are disabled when the widget is not being edited.
+    * There may be other elements that should be shown/hidden based on the mode
+    */
     adjustForMode: function (mode) {
         if (mode !== "edit" && mode !== "edit_dev") {
             //disable when not editing
@@ -211,9 +211,9 @@ my_widget_script =
     },
 
     /**
-     * TO DO: edit this function to define behavior when the user interacts with the form.
-     * This could include when buttons are clicked or when inputs change.
-     */
+    * TO DO: edit this function to define behavior when the user interacts with the form.
+    * This could include when buttons are clicked or when inputs change.
+    */
     addEventListeners: function () {
         //Run my button function when clicked
         $('#myButton').on("click", function () {
@@ -304,12 +304,12 @@ my_widget_script =
     },
 
     /**
-     * TO DO: edit this function to define the symbols that should be added to the HTML
-     * page based on whether or not a field is required to save the widget to the page
-     * 
-     * Here, the function adds a blue # after fields of the class "needForForm" and a 
-     * red * after fields with the "required" property
-     */
+    * TO DO: edit this function to define the symbols that should be added to the HTML
+    * page based on whether or not a field is required to save the widget to the page
+    * 
+    * Here, the function adds a blue # after fields of the class "needForForm" and a 
+    * red * after fields with the "required" property
+    */
     addRequiredFieldIndicators: function () {
         $('.needForTable').each(function () { //find element with class "needForForm"
             //alert($(this).val());
@@ -325,10 +325,10 @@ my_widget_script =
     },
 
     /**
-     * TO DO: edit this function to define how the form should be initilized based 
-     * on the existing form values. This is particularly important for when the 
-     * widget already has data entered, such as when saved to a page.
-     */
+    * TO DO: edit this function to define how the form should be initilized based 
+    * on the existing form values. This is particularly important for when the 
+    * widget already has data entered, such as when saved to a page.
+    */
     setUpInitialState: function () {
         //Run the calculate values method to fill with the loaded data
         this.calcValues();
@@ -376,14 +376,17 @@ my_widget_script =
             $("#newDate").text("Enter number of days");
         } else {
             $("#newDate").text("Enter start date")
-        }
+        };
+
+        //Add classes to add bootstrap styles for left column in form
+        $('.myLeftCol').addClass("col-6 col-md-4 col-lg-3 col-xl-2 text-right");
 
     },
 
     /**
-     * TO DO: edit this function to define which <div>s or other elements
-     * should be adjusted based on the current width of the window
-     */
+    * TO DO: edit this function to define which <div>s or other elements
+    * should be adjusted based on the current width of the window
+    */
     resize: function () {
         //gets the inner width of the window.
         var width = window.innerWidth;
@@ -408,15 +411,15 @@ my_widget_script =
     // ********************** END CUSTOM TO_JSON METHODS **********************
 
     /** -----------------------------------------------------------------------------
-     * VALIDATE FORM ENTRY BEFORE COPYING OR SAVING TABLE TO CSV
-     *
-     * This function will check that elements with a class "needForTable"
-     * are not blank. If there are blank elements, it will return false
-     * and will post an error message "Please fill out all elements marked by a blue #"
-     *
-     * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
-     * -----------------------------------------------------------------------------
-     */
+    * VALIDATE FORM ENTRY BEFORE COPYING OR SAVING TABLE TO CSV
+    *
+    * This function will check that elements with a class "needForTable"
+    * are not blank. If there are blank elements, it will return false
+    * and will post an error message "Please fill out all elements marked by a blue #"
+    *
+    * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+    * -----------------------------------------------------------------------------
+    */
     data_valid_form: function () {
         var valid = true; //begin with a valid value of true
         //var fail_log = ''; //begin with an empty fail log
@@ -445,12 +448,12 @@ my_widget_script =
     },
 
     /**
-     * This function takes form input and adds them to the corresponding
-     * divs within the output table.
-     * 
-     * For elements that are blank or NaN, the function provides an output of NA
-     * 
-     * Calls the resize function at the end
+    * This function takes form input and adds them to the corresponding
+    * divs within the output table.
+    * 
+    * For elements that are blank or NaN, the function provides an output of NA
+    * 
+    * Calls the resize function at the end
     */
     calcValues: function () {
         //Column A
@@ -476,16 +479,16 @@ my_widget_script =
     },
 
     /**
-     * 
-     * This function takes a csv element and filename that are passed from the
-     * exportTableToCSV function.
-     * 
-     * This creates a csvFile and builds a download link that references this file.
-     * The download link is "clicked" by the function to prompt the browser to 
-     * download this file
-     * 
-     * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
-     */
+    * 
+    * This function takes a csv element and filename that are passed from the
+    * exportTableToCSV function.
+    * 
+    * This creates a csvFile and builds a download link that references this file.
+    * The download link is "clicked" by the function to prompt the browser to 
+    * download this file
+    * 
+    * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
+    */
     downloadCSV: function (csv, filename) {
         var csvFile;
         var downloadLink;
@@ -513,12 +516,12 @@ my_widget_script =
     },
 
     /**
-     * This function takes a filename and table name (both strings) as input
-     * It then creates a csv element from the table
-     * This csv element is passed to the downloadCSV function along with the filename
-     * 
-     * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
-     */
+    * This function takes a filename and table name (both strings) as input
+    * It then creates a csv element from the table
+    * This csv element is passed to the downloadCSV function along with the filename
+    * 
+    * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
+    */
     exportTableToCSV: function (filename, table) {
         var csv = [];
         var datatable = document.getElementById(table);
@@ -540,23 +543,23 @@ my_widget_script =
     },
 
     /** 
-     * This function creates a temporary textarea and then appends the contents of the
-     * specified table body to this textarea, separating each cell with a tab (\t).
-     * Because the script editor in LA is within a <textarea> the script cannot contain
-     * the verbatim string "textarea" so this must be separated as "text" + "area"
-     * to avoid errors.
-     * 
-     * If copying a table that has form inputs, then need to refer to the children of 
-     * <td> tags, and get the values by using .val() instead of .text()
-     * 
-     * If copying a table that could have multiple table rows (<tr>), the use the 
-     * \n new line separator
-     * 
-     * The temporary <textarea> is appended to the HTML form, focused on, and selected.
-     * Note that this moves the literal page focus, so having this append near the 
-     * button that calls this function is best. After the <textarea> is copied, it is
-     * then removed from the page.
-     */
+    * This function creates a temporary textarea and then appends the contents of the
+    * specified table body to this textarea, separating each cell with a tab (\t).
+    * Because the script editor in LA is within a <textarea> the script cannot contain
+    * the verbatim string "textarea" so this must be separated as "text" + "area"
+    * to avoid errors.
+    * 
+    * If copying a table that has form inputs, then need to refer to the children of 
+    * <td> tags, and get the values by using .val() instead of .text()
+    * 
+    * If copying a table that could have multiple table rows (<tr>), the use the 
+    * \n new line separator
+    * 
+    * The temporary <textarea> is appended to the HTML form, focused on, and selected.
+    * Note that this moves the literal page focus, so having this append near the 
+    * button that calls this function is best. After the <textarea> is copied, it is
+    * then removed from the page.
+    */
     copyTableRow: function () {
         //create a temporary text area
         var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
@@ -606,10 +609,10 @@ my_widget_script =
         var col6ID = "col6_" + rowCount;
 
         $(tableName).find("tbody").append(
-            $('<tr/>', { //add a new row
+            $('<tr></tr>', { //add a new row
                 id: rowID //give this row the rowID
             }).append(
-                $('<td/>').append( //append a new td to the row
+                $('<td></td>').append( //append a new td to the row
                     $('<input/>', { //append a new input to the td
                         id: col1ID,
                         name: col1ID,
@@ -617,7 +620,7 @@ my_widget_script =
                     })
                 )
             ).append(
-                $('<td/>').append(
+                $('<td></td>').append(
                     $('<input/>', {
                         id: col2ID,
                         name: col2ID,
@@ -625,14 +628,14 @@ my_widget_script =
                     })
                 )
             ).append(
-                $('<td/>').append(
+                $('<td></td>').append(
                     $('<input/>', {
                         id: col3ID,
                         name: col3ID
                     })
                 )
             ).append(
-                $('<td/>').append(
+                $('<td></td>').append(
                     $('<input/>', {
                         id: col4ID,
                         name: col4ID,
@@ -647,8 +650,8 @@ my_widget_script =
                     })
                 )
             ).append(
-                $('<td/>').append( //append a new td to the row
-                    $('<select/>', { //append a new select to the td
+                $('<td></td>').append( //append a new td to the row
+                    $('<select></select>', { //append a new select to the td
                         id: col5ID,
                         name: col5ID,
                         "class": "rowSelect"
@@ -675,14 +678,14 @@ my_widget_script =
                     })
                 )
             ).append(
-                $('<td/>').append( //append a new td to the row
+                $('<td></td>').append( //append a new td to the row
                     //append a new text area to the script. this string has to be split to make LA happy
                     //the widget script entry is within a text area, and if it finds another here, it 
                     //thinks that it has reached the end of the script
                     $('<text' + 'area></text' + 'area>', {
                         id: col6ID,
                         name: col6ID
-                    }).css("margin", "5px")
+                    })
                 )
             )
         );
@@ -730,5 +733,4 @@ my_widget_script =
     ** -----------------------------------------------------------------------------
     */
 
-}
-    ;
+};
