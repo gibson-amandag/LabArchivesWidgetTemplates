@@ -24,14 +24,11 @@ my_widget_script =
         //check parsedJson for info not contained in form inputs and reinitialize
         this.initDynamicContent(parsedJson);
 
-        //adjust form design and buttons based on mode
-        this.adjustForMode(mode);
-
         //resize the content box when the window size changes
         window.onresize = this.resize;
 
         //Define behavior when buttons are clicked or checkboxes/selctions change
-        this.addEventListeners(parsedJson);
+        this.addEventListeners();
 
         // Initialize the form with the stored widgetData using the parent_class.init() function
         this.parent_class.init(mode, () => JSON.stringify(parsedJson.widgetData));
@@ -41,6 +38,9 @@ my_widget_script =
 
         // Set up the form based on previously entered form input
         this.setUpInitialState();
+
+        //adjust form design and buttons based on mode
+        this.adjustForMode(mode);
     },
 
     to_json: function () {
@@ -77,10 +77,10 @@ my_widget_script =
     },
 
     /**
-    * In preview, the form is populated with test data when the
-    * parent_class.test_data() function is called. This randomly selects options for 
-    * dropdown select menus, radio buttons, and checkboxes.
-    */
+   * In preview, the form is populated with test data when the
+   * parent_class.test_data() function is called. This randomly selects options for 
+   * dropdown select menus, radio buttons, and checkboxes.
+   */
     test_data: function () {
         //during development this method is called to populate your form while in preview mode
 
@@ -103,16 +103,16 @@ my_widget_script =
     },
 
     /**
-    * This function determines whether or not the user is allowed to save the widget to the page
-    * 
-    * The original LabArchives function checks for fields that have _mandatory appended to the name attribute
-    * 
-    * The custom function checks for fields with the required attribute. If any of these fields are blank, 
-    * an alert is returns that provides a fail log with the ids of the elements that are missing. If there are
-    * no blank required fields, an empty array is returned.
-    * 
-    * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
-    */
+     * This function determines whether or not the user is allowed to save the widget to the page
+     * 
+     * The original LabArchives function checks for fields that have _mandatory appended to the name attribute
+     * 
+     * The custom function checks for fields with the required attribute. If any of these fields are blank, 
+     * an alert is returns that provides a fail log with the ids of the elements that are missing. If there are
+     * no blank required fields, an empty array is returned.
+     * 
+     * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
+     */
     is_valid: function (b_suppress_message) {
         //called when the user hits the save button, to allow for form validation.
         //returns an array of dom elements that are not valid - default is those elements marked as mandatory
@@ -247,18 +247,28 @@ my_widget_script =
             }
         });
 
-        //When the copy button is clicked, run the copyTableRow function
+        //When the copy button is clicked, run the copyTable function
         $("#copyDataButton").on("click", function () {
             var data_valid = my_widget_script.data_valid_form();
+            var copyHead
+
+            //only copy the heading when the input box is checked
+            if ($("#copyHead").is(":checked")) {
+                copyHead = true;
+            } else {
+                copyHead = false;
+            }
+
+            my_widget_script.calcValues();
+
             //alert(data_valid);
             if (data_valid) {
-                //alert("I'm clicked");
-                my_widget_script.resize();
-                my_widget_script.calcValues();
                 $("#tableDiv").show();
-                my_widget_script.copyTableRow();
+                my_widget_script.resize();
+                my_widget_script.copyTable($("#outTable"), copyHead);
+                $("#errorMsg").html("<span style='color:grey; font-size:24px;'>Copied successfully</span>")
             } else {
-                alert("Nothing was copied");
+                $("#errorMsg").append("<br/><span style='color:grey; font-size:24px;'>Nothing was copied</span>");
             }
         });
 
@@ -311,16 +321,14 @@ my_widget_script =
     * red * after fields with the "required" property
     */
     addRequiredFieldIndicators: function () {
-        $('.needForTable').each(function () { //find element with class "needForForm"
+        $('.needForTableLab').each(function () { //find element with class "needForFormLab"
             //alert($(this).val());
-            $(this).after("<span style='color:blue'>#</span>"); //add # after
+            $(this).html("<span style='color:blue'>#</span>" + $(this).html()); //add # before
         });
 
-        //source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
-        $('#the_form').find('select, textarea, input').each(function () { //find each select field, textarea, and input
-            if ($(this).prop('required')) { //if has the attribute "required"
-                $(this).after("<span style='color:red'>*</span>"); //add asterisk after
-            }
+        $('.requiredLab').each(function () { //find element with class "requiredLab"
+            //alert($(this).val());
+            $(this).html("<span style='color:red'>*</span>" + $(this).html()); //add # before
         });
     },
 
@@ -330,6 +338,9 @@ my_widget_script =
     * widget already has data entered, such as when saved to a page.
     */
     setUpInitialState: function () {
+        //Add classes to add bootstrap styles for left column in form
+        $('.myLeftCol').addClass("col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 text-left text-sm-right");
+
         //Run the calculate values method to fill with the loaded data
         this.calcValues();
 
@@ -378,9 +389,7 @@ my_widget_script =
             $("#newDate").text("Enter start date")
         };
 
-        //Add classes to add bootstrap styles for left column in form
-        $('.myLeftCol').addClass("col-6 col-md-4 col-lg-3 col-xl-2 text-right");
-
+        my_widget_script.resize();
     },
 
     /**
@@ -388,12 +397,6 @@ my_widget_script =
     * should be adjusted based on the current width of the window
     */
     resize: function () {
-        //gets the inner width of the window.
-        var width = window.innerWidth;
-
-        //make width of table div 95% of current width
-        $(".tableDiv").width(width * .95);
-
         //resize the container
         my_widget_script.parent_class.resize_container();
     },
@@ -442,7 +445,6 @@ my_widget_script =
 
         return valid;
     },
-
     myButtonFunc: function () {
         alert("I've been clicked!");
     },
@@ -560,6 +562,41 @@ my_widget_script =
     * button that calls this function is best. After the <textarea> is copied, it is
     * then removed from the page.
     */
+    copyTable: function ($table, copyHead) {
+        //create a temporary text area
+        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
+        var addLine = "";
+        if (copyHead) {
+            $table.find("thead").children("tr").each(function () { //add each child of the row
+                var addTab = "";
+                $(this).children().each(function () {
+                    $temp.text($temp.text() + addTab + $(this).text());
+                    addTab = "\t";
+                });
+            });
+            addLine = "\n";
+        }
+
+        $table.find("tbody").children("tr").each(function () { //add each child of the row
+            $temp.text($temp.text() + addLine);
+            var addTab = "";
+            $(this).find("td").each(function () {
+                if ($(this).text()) {
+                    var addText = $(this).text();
+                } else {
+                    var addText = "NA"
+                }
+                $temp.text($temp.text() + addTab + addText);
+                addTab = "\t";
+                addLine = "\n";
+            });
+        });
+
+        $temp.appendTo($('#tableDiv')).focus().select(); //add temp to tableDiv and select
+        document.execCommand("copy"); //copy the "selected" text
+        $temp.remove(); //remove temp
+    },
+
     copyTableRow: function () {
         //create a temporary text area
         var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
@@ -732,5 +769,4 @@ my_widget_script =
     ** content is created, modified, or deleted within a function.
     ** -----------------------------------------------------------------------------
     */
-
 };
