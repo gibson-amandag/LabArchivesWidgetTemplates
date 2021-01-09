@@ -42,7 +42,7 @@ my_widget_script =
         //adjust form design and buttons based on mode
         this.adjustForMode(mode);
     },
-
+    
     to_json: function () {
         //should return a json string containing the data entered into the form by the user
         //whatever is return from the method is persisted in LabArchives.  must not be binary data.
@@ -52,11 +52,14 @@ my_widget_script =
         var widgetJsonString = this.parent_class.to_json();
 
         //Get information about any dynamic content that may have been created
-        var addedRows = this.getDynamicContent();
+        var dynamicContent = this.getDynamicContent();
 
         // Add widgetData and any additional dynamic content to an output object
         // Will be accessed within the init and from_json methods
-        var output = { widgetData: JSON.parse(widgetJsonString), addedRows: addedRows };
+        var output = { 
+            widgetData: JSON.parse(widgetJsonString), 
+            addedRows: dynamicContent.addedRows 
+        };
 
         //uncomment to check stringified output
         //console.log("to JSON", JSON.stringify(output));
@@ -188,9 +191,9 @@ my_widget_script =
     */
     initDynamicContent: function (parsedJson) {
         for (var i = 0; i < parsedJson.addedRows; i++) {
-            var tableName = $("#exampleTable");
-            my_widget_script.createRow(tableName);
-        };
+            var $table = $("#exampleTable");
+            my_widget_script.createRow($table);
+        }
     },
 
     /**
@@ -203,10 +206,7 @@ my_widget_script =
     adjustForMode: function (mode) {
         if (mode !== "edit" && mode !== "edit_dev") {
             //disable when not editing
-            $("#myButton").prop('disabled', true);
-            $("#calculate").prop('disabled', true);
-            $("#addRow").prop('disabled', true);
-            $("#removeRow").prop('disabled', true);
+            $(".disableOnView").prop("disabled", true);
         }
     },
 
@@ -219,6 +219,13 @@ my_widget_script =
         $('#myButton').on("click", function () {
             my_widget_script.myButtonFunc();
         });
+
+        //When text is input for column c, update the table
+        $("#ColumnC").on("input", function () {
+            var $elToWatch = $(this);
+            var $elToUpdate = $("#ColumnC_calc");
+            my_widget_script.watchValue($elToWatch, $elToUpdate)
+        })
 
         //Show/hide the table
         $("#toggleTable").on("click", function () { //when the showTable button is clicked. Run this function
@@ -237,13 +244,18 @@ my_widget_script =
 
         });
 
-        //when the toCSV button is clicked, run the exportTableToCSV function
+        //when the toCSV button is clicked, run the exportTableToCSV function if data is valid
         $('#toCSV').on("click", function () {
             var data_valid = my_widget_script.data_valid_form();
-            //alert(data_valid);
+            var fileName = "templateData";
+            var tableID = "outTable"
+            
             if (data_valid) {
                 my_widget_script.calcValues();
-                my_widget_script.exportTableToCSV('templateData', 'outTable');
+                my_widget_script.exportTableToCSV(fileName, tableID);
+                $("#errorMsg").html("<span style='color:grey; font-size:24px;'>Saved successfully</span>")
+            } else {
+                $("#errorMsg").append("<br/><span style='color:grey; font-size:24px;'>Did not export</span>");
             }
         });
 
@@ -285,30 +297,36 @@ my_widget_script =
         });
 
         $("#addRow").on("click", function () {
-            var tableName = $("#exampleTable");
+            var $table = $("#exampleTable");
 
-            my_widget_script.createRow(tableName);
+            my_widget_script.createRow($table);
         });
 
         $("#removeRow").on("click", function () {
-            var tableName = ("#exampleTable");
+            var $table = ("#exampleTable");
 
-            my_widget_script.deleteRow(tableName);
+            my_widget_script.deleteRow($table);
         });
 
         $("#numDays").on("input", function () {
             if ($("#startDate").val()) {
-                my_widget_script.addDays($("#numDays").val());
+                var startDateVal = $("#startDate").val();
+                var $newDate = $("#newDate");
+                var numDays = $("#numDays").val();
+                my_widget_script.addDays(startDateVal, $newDate, numDays);
             } else {
-                $("#newDate").text("Enter start date")
+                $("#newDate").text("Enter start date");
             }
         });
 
         $("#startDate").on("input", function () {
             if ($("#numDays").val()) {
-                my_widget_script.addDays($("#numDays").val());
+                var startDateVal = $("#startDate").val();
+                var $newDate = $("#newDate");
+                var numDays = $("#numDays").val();
+                my_widget_script.addDays(startDateVal, $newDate, numDays);
             } else {
-                $("#newDate").text("Enter number of days")
+                $("#newDate").text("Enter number of days");
             }
         });
     },
@@ -317,8 +335,8 @@ my_widget_script =
     * TO DO: edit this function to define the symbols that should be added to the HTML
     * page based on whether or not a field is required to save the widget to the page
     * 
-    * Here, the function adds a blue # after fields of the class "needForForm" and a 
-    * red * after fields with the "required" property
+    * Here, the function adds a blue # before fields of the class "needForFormLab" and a 
+    * red * before fields with the "requiredLab" property
     */
     addRequiredFieldIndicators: function () {
         $('.needForTableLab').each(function () { //find element with class "needForFormLab"
@@ -339,10 +357,13 @@ my_widget_script =
     */
     setUpInitialState: function () {
         //Add classes to add bootstrap styles for left column in form
-        $('.myLeftCol').addClass("col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 text-left text-sm-right");
+        $('.myLeftCol').addClass("col-12 col-sm-6 col-md-4 col-lg-3 text-left text-sm-right");
 
         //Run the calculate values method to fill with the loaded data
         this.calcValues();
+
+        //Update Column C with current input value
+        this.watchValue($("#ColumnC"), $("#ColumnC_calc"));
 
         //Check initial state of checkbox
         if ($('#showCheck').is(":checked")) {
@@ -382,7 +403,10 @@ my_widget_script =
 
         //Print new date
         if ($("#numDays").val() && $("#startDate").val()) {
-            my_widget_script.addDays();
+            var startDateVal = $("#startDate").val();
+            var $newDate = $("#newDate");
+            var numDays = $("#numDays").val();
+            my_widget_script.addDays(startDateVal, $newDate, numDays);
         } else if (!$("#numDays")) {
             $("#newDate").text("Enter number of days");
         } else {
@@ -409,7 +433,8 @@ my_widget_script =
         // This cannot be something complex like a full <div>
 
         var addedRows = $("#exampleTable").find("tbody tr").length;
-        return addedRows;
+        var dynamicContent = {addedRows: addedRows};
+        return dynamicContent;
     },
     // ********************** END CUSTOM TO_JSON METHODS **********************
 
@@ -597,30 +622,6 @@ my_widget_script =
         $temp.remove(); //remove temp
     },
 
-    copyTableRow: function () {
-        //create a temporary text area
-        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
-
-        $("#outTable tbody").children("tr").each(function () { //add each child of the row
-            var addTab = "";
-            $(this).find("td").each(function () {
-                //alert($(this).text());
-                if ($(this).text()) {
-                    var addText = $(this).text();
-                } else {
-                    var addText = "NA"
-                }
-                $temp.text($temp.text() + addTab + addText);
-                addTab = "\t";
-                //alert($temp.text());
-            });
-        });
-
-        $temp.appendTo($('#tableDiv')).focus().select(); //add temp to tableDiv and select
-        document.execCommand("copy"); //copy the "selected" text
-        $temp.remove(); //remove temp
-    },
-
     /* -----------------------------------------------------------------------------
     ** This function creates a new row at the end of the specified table.
     ** 
@@ -634,8 +635,8 @@ my_widget_script =
     ** to avoid errors. 
     ** -----------------------------------------------------------------------------
     */
-    createRow: function (tableName) {
-        var rowCount = $(tableName).find("tbody tr").length + 1;
+    createRow: function ($table) {
+        var rowCount = $table.find("tbody tr").length + 1;
         var rowID = "Row_" + rowCount;
 
         var col1ID = "col1_" + rowCount;
@@ -645,7 +646,7 @@ my_widget_script =
         var col5ID = "col5_" + rowCount;
         var col6ID = "col6_" + rowCount;
 
-        $(tableName).find("tbody").append(
+        $table.find("tbody").append(
             $('<tr></tr>', { //add a new row
                 id: rowID //give this row the rowID
             }).append(
@@ -736,19 +737,22 @@ my_widget_script =
     ** and then resizes the container and tableDiv.
     ** -----------------------------------------------------------------------------
     */
-    deleteRow: function (tableName) {
-        var lastRow = $(tableName).find("tbody tr").last();
+    deleteRow: function ($table) {
+        var lastRow = $table.find("tbody tr").last();
         $(lastRow).remove();
 
         //resize the container
         my_widget_script.resize();
     },
 
-    addDays: function (numDays) {
-        //debugger;
-        var dateString = $("#startDate").val(); //get the date string from the input
-
-        var startDate = new Date(dateString);
+    /* -----------------------------------------------------------------------------
+    ** This function takes a startDateVal from a date input and adds a certain 
+    ** numDays (number of days), and replaces the text in the $newDate element 
+    ** which can be either an id or a class with date string of that addition
+    ** -----------------------------------------------------------------------------
+    */
+    addDays: function (startDateVal, $newDate, numDays) {
+        var startDate = new Date(startDateVal);
 
         var offset = new Date().getTimezoneOffset(); //get the offset of local time from GTC
         // this is necessary because making a Date object from the input date string creates a date with time of midnight GTC
@@ -757,7 +761,16 @@ my_widget_script =
         //Add the number of days (in ms) and offset (in ms) to the start Date (in ms) and make it a new date object
         var newDate = new Date(startDate.getTime() + numDays * 24 * 60 * 60 * 1000 + offset * 60 * 1000);
 
-        $("#newDate").text(newDate.toDateString());
+        $newDate.text(newDate.toDateString());
+    },
+
+    /* ----
+     * This takes the value of the input for the $elToWatch and then updates the text of 
+     * $elToUpdate to match whenever watchValue is called
+     */  
+    watchValue: function ($elToWatch, $elToUpdate) {
+        var value = $elToWatch.val();
+        $elToUpdate.text(value);
     }
 
     /* -----------------------------------------------------------------------------
