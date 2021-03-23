@@ -300,6 +300,14 @@ $(document).ready(function () {
         //Add classes to add bootstrap styles for left column in form
         $('.myLeftCol').addClass("col-12 col-sm-6 col-md-4 col-lg-3 text-left text-sm-right");
 
+        $('textarea.autoAdjust').each(function () {
+            this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+        }).on('input', function () {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            my_widget_script.resize();
+        });
+
         my_widget_script.resize();
     },
 
@@ -384,6 +392,8 @@ parent_form_script.wiget_version_info ={"version":20,"created":"2020-12-29T22:00
 <!--the html for your tool goes here.  Paste it into the LA dev tool when you have it the way you want it-->
 <!------------------------------------------------------------------------------------------>
 <!-- #region HTML -->
+<!-- Luxon Date Handling -->
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
 <!-- Bootstrap CSS -->
 <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet" />
@@ -455,7 +465,7 @@ parent_form_script.wiget_version_info ={"version":20,"created":"2020-12-29T22:00
 <!-- Error Message Div -->
 <div class="container" id="errorMsg">&nbsp;</div>
 
-<!-- Example Table Container that is responsive to window width, including for xs, but fixed xs width -->
+<!-- Example Table Container that is responsive to window width, including for xs -->
 <div class="container mt-2">
     <div class="table-responsive xsTableDiv">
         <table class="table">
@@ -467,21 +477,6 @@ parent_form_script.wiget_version_info ={"version":20,"created":"2020-12-29T22:00
             </tbody>
         </table>
         <p>&nbsp;</p>
-    </div>
-</div>
-
-<!-- This seems to work for extra-small screens, and actually fills the width -->
-<div class="container">
-    <div class="row">
-        <div class="col-12 table-responsive xsTableDiv" id="tableDiv">
-            <table id="table" class="table">
-                <thead>
-                    <tr>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
     </div>
 </div>
 

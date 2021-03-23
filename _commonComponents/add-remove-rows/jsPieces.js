@@ -218,10 +218,13 @@ my_widget_script =
     ** -----------------------------------------------------------------------------
     */
     deleteRow: function ($table) {
-        var lastRow = $table.find("tbody tr").last();
-        $(lastRow).remove();
-
-        //resize the container
-        my_widget_script.resize();
+        var proceed = confirm("Are you sure you want to remove the row?");
+        if(proceed){
+            var lastRow = $(tableName).find("tbody tr").last();
+            $(lastRow).remove();
+    
+            //resize the container
+            my_widget_script.resize();
+        }
     }
 };
