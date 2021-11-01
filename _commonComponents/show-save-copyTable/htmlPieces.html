@@ -1,0 +1,39 @@
+<!-- Luxon for dates -->
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+
+<div class="container mt-2">
+    <div id="forCopy">&nbsp;</div>
+    <div id="errorMsg">&nbsp;</div>
+</div>
+
+<div class="container mt-2">
+    <div class="row mt-2">
+        <div class="col-12 col-sm-6 col-md-3"><input id="toggleTable1" name="toggletable1" type="button"
+                value="Show/Hide Table" class="fullWidth toggleTable" data-table="tableID"/>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3"><input id="toCSV1" name="tocsv1" type="button" value="Save CSV"
+                class="fullWidth toCSV" data-table="tableID" /></div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="copyDataButton1" name="copydatabutton1" type="button" value="Copy Data" class="fullWidth copyData" data-table="tableID"/>
+            <br />Copy Table Head? <input id="copyHead1" name="copyhead1" type="checkbox" class="copyHead" data-table="tableID"/>
+            <br />Transpose Table? <input id="transpose1" name="transpose1" type="checkbox" class="transpose" data-table="tableID" />
+        </div>
+    </div>
+</div>
+
+<!-- This seems to work for extra-small screens, and actually fills the width -->
+<div class="container">
+    <div class="row">
+        <div class="col-12 table-responsive xsTableDiv" id="tableDiv">
+            <table id="tableID" class="table">
+                <thead>
+                    <tr>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
