@@ -14,7 +14,20 @@ my_widget_script =
 
     setUpInitialState: function () {
         // remove the .autoAdjust if you want this to apply to all textareas
-        $("textarea .autoAdjust").on("input", function () {
+        $('textarea.autoAdjust').each(function () {
+            var height = this.scrollHeight;
+            if(height == 0){ // when hidden to begin with, the height is 0; this won't make everything visible, though if more than two lines at start
+                // height = 48;
+                text = $(this).val();
+                $(".forTextBox").show();
+                $("#forSizing").val(text);
+                var forSizing = document.getElementById("forSizing");
+                height = forSizing.scrollHeight;
+                $(".forTextBox").hide();
+            }
+            // console.log(height);
+            this.setAttribute('style', 'height:' + height + 'px;overflow-y:hidden;');
+        }).on('input', function () {
             this.style.height = 'auto';
             this.style.height = (this.scrollHeight) + 'px';
             my_widget_script.resize();
