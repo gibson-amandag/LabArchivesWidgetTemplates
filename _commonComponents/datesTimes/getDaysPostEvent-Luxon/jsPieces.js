@@ -19,12 +19,12 @@ my_widget_script =
     setUpInitialState: function () {
         
 
-        my_widget_script.resize();
+        this.resize();
     },
     
     resize: function () {
         //resize the container
-        my_widget_script.parent_class.resize_container();
+        this.parent_class.resize_container();
     },
     // ********************** END CUSTOM INIT METHODS **********************
 

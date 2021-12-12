@@ -1,21 +1,21 @@
 my_widget_script =
 {
     setUpInitialState: function () {
-        $(".watchTime").each(function () {
-            var $elToWatch = $(this);
-            var $elToFill = $(this).parent().next().find($(".fillTime"));
-            console.log($elToFill);
+        $(".watchTime").each((i, e)=> {
+            var $elToWatch = $(e);
+            var $elToFill = $(e).parent().next().find($(".fillTime"));
+            // console.log($elToFill);
     
-            my_widget_script.watchTime($elToWatch, $elToFill);
-        }).on("input", function () {
-            var $elToWatch = $(this);
-            var $elToFill = $(this).parent().next().find($(".fillTime"));
-            console.log($elToFill);
+            this.watchTime($elToWatch, $elToFill);
+        }).on("input", (e)=> {
+            var $elToWatch = $(e.currentTarget);
+            var $elToFill = $(e.currentTarget).parent().next().find($(".fillTime"));
+            // console.log($elToFill);
     
-            my_widget_script.watchTime($elToWatch, $elToFill);
+            this.watchTime($elToWatch, $elToFill);
         });
 
-        my_widget_script.resize();
+        this.resize();
     },
 
     getHoursMin: function (timeString) {
@@ -30,24 +30,23 @@ my_widget_script =
     },
     
     watchTime: function ($elToWatch, $elToFill) {
-        var addTime = $elToFill.data("time"); // add a date-time property to the $elToFill; this should be in the form hh:mm
-        // console.log(length);
-    
+        var addTime = $elToFill.data("time"); // add a data-time property to the $elToFill; this should be in the form hh:mm
+        
         var startTime = $elToWatch.val();
         if(startTime){
             var time = new Date();
-            startTimeSplit = my_widget_script.getHoursMin(startTime);
-            addTimeSplit = my_widget_script.getHoursMin(addTime);
+            startTimeSplit = this.getHoursMin(startTime);
+            addTimeSplit = this.getHoursMin(addTime);
             // set start time
             time.setHours(startTimeSplit.hours, startTimeSplit.mins, 00, 000);
             time.setHours(time.getHours() + addTimeSplit.hours);
             time.setMinutes(time.getMinutes() + addTimeSplit.mins);
-            console.log(time);
+            // console.log(time);
             $elToFill.text(time.toLocaleTimeString());
         } else{
             $elToFill.text("{Enter Start Time}")
         }
         
-        my_widget_script.resize();
+        this.resize();
     }
 };

@@ -18,10 +18,10 @@ my_widget_script =
 
     setUpInitialState: function () {
         // If this is dynamically created, add this when appending
-        $(".toFix").on("dblclick", function () {
+        $(".toFix").on("dblclick", (e)=> {
             // Allows for correcting value if double-clicked
-            var text = $(this).text();
-            $(this).addClass("fixing").addClass("filled");
+            var text = $(e.currentTarget).text();
+            $(e.currentTarget).addClass("fixing").addClass("filled");
             $(".forFixing").show();
             $("#fixVal").val(text).select();
             my_widget_script.resize();

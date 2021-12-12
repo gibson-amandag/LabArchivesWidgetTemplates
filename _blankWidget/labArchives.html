@@ -10,6 +10,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
     crossorigin="anonymous"></script>
+<!-- Bootbox for dialogs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- Call no conflict to reassign this newer jQuery off of $ and jquery-->
 <script>
     var $jq351 = jQuery.noConflict(true);
@@ -40,12 +42,12 @@
     }
 
     .fullWidth {
-        width: 90%
+        width: 100%
     }
 </style>
 
 <!-- TO DO Begin typing your HTML code here -->
-<div class="container">
+<div class="container hideView">
     <p>Elements that are required to save this page are marked with a red asterisk <span
             style="color:red">*</span><br />
         Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span
@@ -62,13 +64,13 @@
     </div>
 
     <div class="row align-items-end mt-2">
-        <div class="myLeftCol requiredLab">Row 2</div>
+        <div class="myLeftCol">Row 2</div>
 
         <div class="col"></div>
     </div>
     <div class="row mt-2">
-        <div class="myLeftCol">Date:</div>
-        <div class="col"><input type="date" name="testdate" id="testDate" /></div>
+        <div class="myLeftCol requiredLab">Date:</div>
+        <div class="col"><input type="date" name="testdate" id="testDate" required/></div>
     </div>
     <div class="row mt-2">
         <div class="myLeftCol">Time:</div>
@@ -77,7 +79,10 @@
             <span class="validity"></span>
         </div>
     </div>
-    <div class="col"><input type="text" name="fordatepicker" id="forDatePicker"/></div>
+    <div class="row mt-2">
+        <div class="myLeftCol">Textarea:</div>
+        <div class="col"><textarea name="testtext" id="testText" class="autoAdjust"></textarea></div>
+    </div>
 </div>
 
 <!-- Error Message Div -->

@@ -1,10 +1,10 @@
 my_widget_script =
 {
     is_valid: function (b_suppress_message) {
-        $("input[type='date']").each(function () {
-            var date = $(this).val();
+        $("input[type='date']").each((i,e)=> {
+            var date = $(e).val();
             if(date){
-                var validDate = my_widget_script.isValidDate(date);
+                var validDate = this.isValidDate(date);
                 if(!validDate){
                     fail = true;
                     fail_log += "Please enter valid date in form 'YYYY-MM-DD'";
@@ -12,10 +12,10 @@ my_widget_script =
             }
         });
 
-        $("input[type='time']").each(function () {
-            var time = $(this).val();
+        $("input[type='time']").each((i,e)=> {
+            var time = $(e).val();
             if(time){
-                var validtime = my_widget_script.isValidTime(time);
+                var validtime = this.isValidTime(time);
                 if(!validtime){
                     fail = true;
                     fail_log += "Please enter valid time in form 'hh:mm' - 24 hr time";
@@ -41,7 +41,7 @@ my_widget_script =
         if(input.type !== "time"){
             supported = false;
         }
-        my_widget_script.timeSupported = supported;
+        this.timeSupported = supported;
         input.remove();
         return (supported);
     },
@@ -49,14 +49,14 @@ my_widget_script =
     timeSupported: true,
 
     checkTimeFormat: function ($timeInput) {
-        if(!my_widget_script.timeSupported){ // if not supported
+        if(!this.timeSupported){ // if not supported
             $timeInput.next(".timeWarning").remove();
             var time = $timeInput.val();
-            var isValid = my_widget_script.isValidTime(time);
+            var isValid = this.isValidTime(time);
             if(!isValid){
                 $timeInput.after('<div class="text-danger timeWarning">Enter time as "hh:mm" in 24-hr format</div>');
             }
-            my_widget_script.resize();
+            this.resize();
         }
     },
 
@@ -80,7 +80,7 @@ my_widget_script =
         if(input.type !== "date"){
             supported = false;
         }
-        my_widget_script.dateSupported = supported;
+        this.dateSupported = supported;
         input.remove();
         return (supported);
     },
@@ -88,15 +88,15 @@ my_widget_script =
     dateSupported: true,
 
     checkDateFormat: function ($dateInput) {
-        if(!my_widget_script.dateSupported){ // if not supported
+        if(!this.dateSupported){ // if not supported
             $dateInput.next(".dateWarning").remove();
             var date = $dateInput.val();
-            var isValid = my_widget_script.isValidDate(date);
+            var isValid = this.isValidDate(date);
             if(!isValid){
                 $dateInput.after('<div class="text-danger dateWarning">Enter date as "YYYY-MM-DD"</div>');
             }
             $dateInput.datepicker({dateFormat: "yy-mm-dd"})
-            my_widget_script.resize();
+            this.resize();
         }
     },
 
@@ -106,30 +106,26 @@ my_widget_script =
             $(".disableOnView").prop("disabled", true);
             $("input[type='date']").removeClass(".hasDatePicker");
         } else {
-            $("input[type='date']").each(function () {
-                my_widget_script.checkDateFormat($(this));
+            $("input[type='date']").each((i,e)=> {
+                this.checkDateFormat($(e));
             });
             
-            $("input[type='time']").each(function () {
-                my_widget_script.checkTimeFormat($(this));
+            $("input[type='time']").each((i,e)=> {
+                this.checkTimeFormat($(e));
             });
         }
     },
 
     setUpInitialState: function () {
-        my_widget_script.isDateSupported();
-        my_widget_script.isTimeSupported();
+        this.isDateSupported();
+        this.isTimeSupported();
         
-        $("input[type='date']").prop("placeholder", "YYYY-MM-DD").on("change", function () {
-            my_widget_script.checkDateFormat($(this));
-        }).each(function () {
-            my_widget_script.checkDateFormat($(this));
+        $("input[type='date']").prop("placeholder", "YYYY-MM-DD").on("change", (e)=> {
+            this.checkDateFormat($(e.currentTarget));
         });
         
-        $("input[type='time']").prop("placeholder", "hh:mm").on("change", function () {
-            my_widget_script.checkTimeFormat($(this));
-        }).each(function () {
-            my_widget_script.checkTimeFormat($(this));
+        $("input[type='time']").prop("placeholder", "hh:mm").on("change", (e)=> {
+            this.checkTimeFormat($(e.currentTarget));
         });
     }
 };

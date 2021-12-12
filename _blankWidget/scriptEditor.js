@@ -13,7 +13,7 @@ my_widget_script =
         //By default it calls the parent_class's init.
 
         //uncomment to inspect and view code while developing
-        //debugger;
+        // debugger;
 
         //Get the parsed JSON data
         var parsedJson = this.parseInitJson(json_data);
@@ -25,7 +25,7 @@ my_widget_script =
         this.initDynamicContent(parsedJson);
 
         //resize the content box when the window size changes
-        window.onresize = this.resize;
+        window.onresize = ()=> this.resize(); // need the arrow func, or "this" within resize becomes associated with event
 
         //Define behavior when buttons are clicked or checkboxes/selctions change
         this.addEventListeners();
@@ -133,23 +133,23 @@ my_widget_script =
         var name; //create a name variable
 
         //search the_form for all elements that are of type select, textarea, or input
-        $('#the_form').find('select, textarea, input').each(function () {
-            if (!$(this).prop('required')) { //if this element does not have a required attribute
+        $('#the_form').find('select, textarea, input').each((i, e)=> {
+            if (!$(e).prop('required')) { //if this element does not have a required attribute
                 //don't change anything (fail remains false)
             } else { //if there is a required attribute
-                if (!$(this).val()) { //if there is not a value for this input
+                if (!$(e).val()) { //if there is not a value for this input
                     fail = true; //change fail to true
-                    name = $(this).attr('id'); //replace the name variable with the name attribute of this element
+                    name = $(e).attr('id'); //replace the name variable with the name attribute of this element
                     fail_log += name + " is required \n"; //add to the fail log that this name is required
                 }
 
             }
         });
 
-        $("input[type='date']").each(function () {
-            var date = $(this).val();
+        $("input[type='date']").each((i, e)=> {
+            var date = $(e).val();
             if(date){
-                var validDate = my_widget_script.isValidDate(date);
+                var validDate = this.isValidDate(date);
                 if(!validDate){
                     fail = true;
                     fail_log += "Please enter valid date in form 'YYYY-MM-DD'";
@@ -157,10 +157,10 @@ my_widget_script =
             }
         });
 
-        $("input[type='time']").each(function () {
-            var time = $(this).val();
+        $("input[type='time']").each((i, e)=> {
+            var time = $(e).val();
             if(time){
-                var validtime = my_widget_script.isValidTime(time);
+                var validtime = this.isValidTime(time);
                 if(!validtime){
                     fail = true;
                     fail_log += "Please enter valid time in form 'hh:mm' - 24 hr time";
@@ -169,7 +169,7 @@ my_widget_script =
         });
 
         if (fail) { //if fail is true (meaning a required element didn't have a value)
-            return alert(fail_log); //return the fail log as an alert
+            return bootbox.alert(fail_log); //return the fail log as an alert
         } else {
             var noErrors = [];
             return noErrors;
@@ -224,13 +224,14 @@ my_widget_script =
             //disable when not editing
             $(".disableOnView").prop("disabled", true);
             $("input[type='date']").removeClass(".hasDatePicker");
+            $(".hideView").hide();
         } else {
-            $("input[type='date']").each(function () {
-                my_widget_script.checkDateFormat($(this));
+            $("input[type='date']").each((i, e)=> {
+                this.checkDateFormat($(e));
             });
             
-            $("input[type='time']").each(function () {
-                my_widget_script.checkTimeFormat($(this));
+            $("input[type='time']").each((i, e)=> {
+                this.checkTimeFormat($(e));
             });
         }
     },
@@ -251,14 +252,14 @@ my_widget_script =
      * red * before fields with the "requiredLab" property
      */
     addRequiredFieldIndicators: function () {
-        $('.needForTableLab').each(function () { //find element with class "needForFormLab"
-            //alert($(this).val());
-            $(this).html("<span style='color:blue'>#</span>" + $(this).html()); //add # before
+        $('.needForTableLab').each((i, e)=> { //find element with class "needForFormLab"
+            //alert($(e).val());
+            $(e).html("<span class='hideView' style='color:blue'>#</span>" + $(e).html()); //add # before
         });
 
-        $('.requiredLab').each(function () { //find element with class "requiredLab"
-            //alert($(this).val());
-            $(this).html("<span style='color:red'>*</span>" + $(this).html()); //add # before
+        $('.requiredLab').each((i, e)=> { //find element with class "requiredLab"
+            //alert($(e).val());
+            $(e).html("<span class='hideView' style='color:red'>*</span>" + $(e).html()); //add # before
         });
     },
 
@@ -279,21 +280,22 @@ my_widget_script =
         if(input.type !== "time"){
             supported = false;
         }
-        my_widget_script.timeSupported = supported;
+        this.timeSupported = supported;
+        input.remove();
         return (supported);
     },
 
     timeSupported: true,
 
     checkTimeFormat: function ($timeInput) {
-        if(!my_widget_script.timeSupported){ // if not supported
+        if(!this.timeSupported){ // if not supported
             $timeInput.next(".timeWarning").remove();
             var time = $timeInput.val();
-            var isValid = my_widget_script.isValidTime(time);
+            var isValid = this.isValidTime(time);
             if(!isValid){
                 $timeInput.after('<div class="text-danger timeWarning">Enter time as "hh:mm" in 24-hr format</div>');
             }
-            my_widget_script.resize();
+            this.resize();
         }
     },
 
@@ -317,22 +319,23 @@ my_widget_script =
         if(input.type !== "date"){
             supported = false;
         }
-        my_widget_script.dateSupported = supported;
+        this.dateSupported = supported;
+        input.remove();
         return (supported);
     },
 
     dateSupported: true,
 
     checkDateFormat: function ($dateInput) {
-        if(!my_widget_script.dateSupported){ // if not supported
+        if(!this.dateSupported){ // if not supported
             $dateInput.next(".dateWarning").remove();
             var date = $dateInput.val();
-            var isValid = my_widget_script.isValidDate(date);
+            var isValid = this.isValidDate(date);
             if(!isValid){
                 $dateInput.after('<div class="text-danger dateWarning">Enter date as "YYYY-MM-DD"</div>');
             }
             $dateInput.datepicker({dateFormat: "yy-mm-dd"})
-            my_widget_script.resize();
+            this.resize();
         }
     },
 
@@ -345,27 +348,27 @@ my_widget_script =
         //Add classes to add bootstrap styles for left column in form
         $('.myLeftCol').addClass("col-12 col-sm-6 col-md-4 col-lg-3 text-left text-sm-right");
         
-        my_widget_script.isDateSupported();
-        my_widget_script.isTimeSupported();
+        this.isDateSupported();
+        this.isTimeSupported();
 
 
-        $("input[type='date']").prop("placeholder", "YYYY-MM-DD").on("change", function () {
-            my_widget_script.checkDateFormat($(this));
+        $("input[type='date']").prop("placeholder", "YYYY-MM-DD").on("change", (e)=> {
+            this.checkDateFormat($(e.target));
         });
         
-        $("input[type='time']").prop("placeholder", "hh:mm").on("change", function () {
-            my_widget_script.checkTimeFormat($(this));
+        $("input[type='time']").prop("placeholder", "hh:mm").on("change", (e)=> {
+            this.checkTimeFormat($(e.target));
         });
 
-        $('textarea.autoAdjust').each(function () {
-            this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
-        }).on('input', function () {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-            my_widget_script.resize();
+        $('textarea.autoAdjust').each((i,e)=> { // i is the index for each match, textArea is the object
+            e.setAttribute('style', 'height:' + (e.scrollHeight) + 'px;overflow-y:hidden;');
+        }).on('input', (e)=> {
+            e.target.style.height = 'auto';
+            e.target.style.height = (e.target.scrollHeight) + 'px';
+            this.resize();
         });
 
-        my_widget_script.resize();
+        this.resize();
     },
 
     /**
@@ -374,12 +377,21 @@ my_widget_script =
      */
     resize: function () {
         //resize the container
-        my_widget_script.parent_class.resize_container();
+        this.parent_class.resize_container();
     },
     // ********************** END CUSTOM INIT METHODS **********************
 
 
     // ********************** START CUSTOM TO_JSON METHODS **********************
+    /**
+     * getDynamicContent, such as the number of rows added to the page
+     * 
+     * If you add something here, you need to read it within to_json to 
+     * provide it to the output of to_json to be read when initiating form
+     * 
+     * If you're just reading data that's stored as a property of 
+     * my_widget_script, you can do that directly in to_json
+     */ 
     getDynamicContent: function () {
         var dynamicContent = {};
         return dynamicContent;
@@ -402,10 +414,10 @@ my_widget_script =
         //var name; //create a name variable
 
         //search the_form for all elements that are of class "needForForm"
-        $('.needForTable').each(function () {
-            if (!$(this).val()) { //if there is not a value for this input
+        $('.needForTable').each((i, e)=> {
+            if (!$(e).val()) { //if there is not a value for this input
                 valid = false; //change valid to false
-                //name = $(this).attr('id'); //replace the name variable with the id attribute of this element
+                //name = $(e).attr('id'); //replace the name variable with the id attribute of this element
                 //fail_log += name + " is required \n"; //add to the fail log that this name is required
             }
         });
@@ -417,5 +429,107 @@ my_widget_script =
         }
 
         return valid;
+    },
+
+    /**
+     * Run the supplied function if user presses OK
+     * 
+     * @param text The message to be displayed to the user. 
+     * @param functionToCall Function to run if user pressed OK
+     * 
+     * If no text is provided, "Are you sure?" is used
+     * Can supply a function with no parameters and no () after the name,
+     * or an anonymous function using function(){} or ()=>{}
+     * 
+     * Nothing happens if cancel or "X" is pressed
+     * 
+     * Example:
+     * my_widget_script.runIfConfirmed(
+            "Do you want to run the function?", 
+            ()=>{
+                console.log("pretend delete function");
+            }
+        );
+    */
+    runIfConfirmed: function(text, functionToCall){
+        var thisMessage = "Are you sure?";
+        if(text){
+            thisMessage = text;
+        }
+        bootbox.confirm({
+            message: thisMessage,
+            callback: (proceed)=>{
+                if(proceed){
+                    functionToCall()
+                }
+            }
+        });
+    },
+
+    /**
+     * Confirm with user
+     * 
+     * @param text The message to display to user
+     * @param functionToCall Function to run, with the result (true/false) as a parameter
+     * 
+     * If no text is provided, "Do you wish to proceed?" is the default
+     * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
+     * 
+     * Example:
+     * my_widget_script.dialogConfirm(
+            "Make a choice:", 
+            (result)=>{ // arrow function, "this" still in context of button
+                if(result){
+                    console.log("You chose OK");
+                } else {
+                    console.log("You canceled or closed the dialog");
+                }
+            }
+        );
+        */
+    dialogConfirm: function(text, functionToCall){
+        var thisMessage = "Do you want to proceed?";
+        if(text){
+            thisMessage = text;
+        }
+        bootbox.confirm({
+            message: thisMessage,
+            callback: (result)=>{
+                functionToCall(result);
+            }
+        })
+    },
+
+    /**
+     * Get user input for a function
+     * 
+     * @param prompt Text to provide to the user
+     * @param functionToCall Function to run, with the user input as a parameter
+     * 
+     * If no text is provided, "Enter value:" is used as default
+     * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
+     * 
+     * Example:
+     * my_widget_script.runBasedOnInput(
+            "Enter a number from 0-10", (result)=>{
+                if(result <= 10 && result >= 0){
+                    console.log("You entered: " + result);
+                } else {
+                    console.log("You did not enter an appropriate value");
+                }
+            }
+        );
+        */ 
+    runBasedOnInput: function(prompt, functionToCall){
+        var thisTitle = "Enter value:"
+        if(prompt){
+            thisTitle = prompt;
+        }
+        bootbox.prompt({
+            title: thisTitle,
+            callback: (result)=>{
+                functionToCall(result);
+            }
+        });
     }
 };

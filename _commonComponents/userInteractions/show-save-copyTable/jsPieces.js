@@ -8,25 +8,25 @@ my_widget_script =
     },
 
     addEventListeners: function () {
-        $(".toggleTable").on("click", function () {
-            var tableID = $(this).data("table");
+        $(".toggleTable").on("click", (e)=> {
+            var tableID = $(e.currentTarget).data("table");
             var $table = $("#"+tableID);
-            my_widget_script.toggleTableFuncs($table);
+            this.toggleTableFuncs($table);
         });
 
-        $('.toCSV').on("click", function () {
-            var tableID = $(this).data("table");
+        $('.toCSV').on("click", (e)=> {
+            var tableID = $(e.currentTarget).data("table");
             var dateToday = luxon.DateTime.now().toISODate(); // Luxon has to be added in HTML
             var fileName = "table_"+tableID+"_"+dateToday;
             var $errorMsg = $("#errorMsg");
             
-            my_widget_script.toCSVFuncs(fileName, tableID, $errorMsg);
+            this.toCSVFuncs(fileName, tableID, $errorMsg);
         });
 
-       $(".copyData").on("click", function () {
-            var tableID = $(this).data("table");
+       $(".copyData").on("click", (e)=> {
+            var tableID = $(e.currentTarget).data("table");
             // Get the data-table text string to add to the query to find the table
-            var tableSearch = my_widget_script.tableSearch(tableID);
+            var tableSearch = this.tableSearch(tableID);
             // Find the element that tells whether or not to copy the table
             var $copyHead = $(".copyHead"+tableSearch);
             var $transpose = $(".transpose"+tableSearch);
@@ -35,7 +35,7 @@ my_widget_script =
             var $errorMsg = $("#errorMsg");
             var $divForCopy = $("#forCopy");
             
-            my_widget_script.copyDataFuncs($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose)
+            this.copyDataFuncs($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose)
         });
     },
 
@@ -45,7 +45,7 @@ my_widget_script =
     
     resize: function () {
         //resize the container
-        my_widget_script.parent_class.resize_container();
+        this.parent_class.resize_container();
     },
     // ********************** END CUSTOM INIT METHODS **********************
 
@@ -88,7 +88,7 @@ my_widget_script =
      * @returns 
      */
     tableSearch: function (table){
-        var tableSearch = my_widget_script.dataSearch("table", table);
+        var tableSearch = this.dataSearch("table", table);
         return tableSearch;
     },
 
@@ -100,10 +100,10 @@ my_widget_script =
      * @param {*} $table - jQuery object for table
      */
     toggleTableFuncs: function ($table) {
-        my_widget_script.resize();
-        my_widget_script.data_valid_form();
+        this.resize();
+        this.data_valid_form();
         $table.toggle();
-        my_widget_script.parent_class.resize_container();
+        this.parent_class.resize_container();
     },
 
     /**
@@ -201,35 +201,54 @@ my_widget_script =
         var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
         var rows = [];
         var rowNum = 0;
+        // If you copying the head of the table
         if (copyHead) {
-            $table.find("thead").children("tr").each(function () {
+            // Find thead and then all children rows
+            $table.find("thead").children("tr").each((i,e)=> {
+                // If the table is being transposed, start the row number at 0 for each new row
                 if(transpose){rowNum = 0;}
-                $(this).find("td, th").each(function () {
+                // For each row, find each td or th element (table cell)
+                $(e).find("td, th").each((i,e)=> {
+                    // If there's not yet an array for this row, make an empty one
                     if(rows[rowNum]===undefined){rows[rowNum] = []}
-                    rows[rowNum].push($(this).text());
+                    // Add the text of each cell to the row's array
+                    rows[rowNum].push($(e).text());
+                    // If table is being transposed, add one to the row number for each cell
                     if(transpose){rowNum++;}
                 });
+                // If table is not being transposed, add one to the row number for each row
                 if(!transpose){rowNum++;}
             });
         }
 
-        $table.find("tbody").children("tr").each(function () {
-            if(transpose){rowNum = 0;} else {}
-            $(this).find("td, th").each(function () {
+        // Find each row in the table body
+        $table.find("tbody").children("tr").each((i,e)=> {
+            // If transposing, start the row number at 0 for each new row
+            if(transpose){rowNum = 0;}
+            // Find each cell within the row
+            $(e).find("td, th").each((i,e)=> {
+                // If there's not yet an array for this row, make an empty one
                 if(rows[rowNum]===undefined){rows[rowNum] = []}
-                rows[rowNum].push($(this).text());
+                // Add the text of each cell to the row's array
+                rows[rowNum].push($(e).text());
+                // If the table is being transposed, add one to the row number for each cell
                 if(transpose){rowNum++;}
             });
+            // If table is not being transposed, add one to the row number for each row
             if(!transpose){rowNum++;}
         });
 
+        // For each row, join together all of the elements of the array with a \t to separate them (tab)
         for(var i = 0; i < rows.length; i++){
             rows[i] = rows[i].join("\t");
         }
 
+        // Add each row to the temporary text area using \n (new line) to separate them
         $temp.append(rows.join("\n"));
-        $temp.appendTo($divForCopy).select(); //add temp to tableDiv and select
-        document.execCommand("copy"); //copy the "selected" text
+        // Append the textarea to the div for copy, then select it
+        $temp.appendTo($divForCopy).select();
+        // Copy the "selected" text
+        document.execCommand("copy");
         $temp.remove(); //remove temp
         // Doesn't work within LA b/c of permissions, but would be easier way to copy w/o appending to page
         // navigator.clipboard.writeText(rows.join("\n")); 
@@ -243,10 +262,10 @@ my_widget_script =
      * @param {*} $table - jQuery object that is the table that will be shown/hidden
      */
     toggleTableFuncs: function ($table) {
-        my_widget_script.resize();
-        my_widget_script.data_valid_form(); //run to give error, but allow to show regardless
+        this.resize();
+        this.data_valid_form(); //run to give error, but allow to show regardless
         $table.toggle();
-        my_widget_script.parent_class.resize_container();
+        this.parent_class.resize_container();
     },
 
     /**
@@ -260,10 +279,10 @@ my_widget_script =
      * @param $errorMsg - error message div as jQuery object
      */
     toCSVFuncs: function (fileName, tableID, $errorMsg) {
-        var data_valid = my_widget_script.data_valid_form();
+        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
 
         if (data_valid) {
-            my_widget_script.exportTableToCSV(fileName, tableID);
+            this.exportTableToCSV(fileName, tableID);
             $errorMsg.html("<span style='color:grey; font-size:24px;'>Saved successfully</span>");
         } else {
             $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Did not export</span>");
@@ -281,29 +300,25 @@ my_widget_script =
      * @param $tableDiv - div containing table to copy
      * @param $errorMsg - error message div as jQuery object
      * @param $divForCopy - div where the output should copy to
-     * @param $copyHead - checkbox for whether or not to transpose the table head as jQuery object
+     * @param $transpose - checkbox for whether or not to transpose the table head as jQuery object
      */
      copyDataFuncs: function ($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose){
-        var data_valid = my_widget_script.data_valid_form();
-        var copyHead, transpose;
+        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
+        var copyHead = false, transpose = false;
 
         //only copy the heading when the input box is checked
         if ($copyHead.is(":checked")) {
             copyHead = true;
-        } else {
-            copyHead = false;
         }
 
         if ($transpose.is(":checked")) {
             transpose = true;
-        } else {
-            transpose = false;
         }
 
         if (data_valid) { //if data is valid
             $tableDiv.show(); //show the table
-            my_widget_script.resize(); //resize
-            my_widget_script.copyTable($tableToCopy, copyHead, $divForCopy, transpose); //copy table
+            this.resize(); //resize
+            this.copyTable($tableToCopy, copyHead, $divForCopy, transpose); //copy table
             $errorMsg.html("<span style='color:grey; font-size:24px;'>Copied successfully</span>") //update error message
         } else {
             $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Nothing was copied</span>"); //add to error message

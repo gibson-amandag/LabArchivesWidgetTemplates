@@ -1,0 +1,44 @@
+runIfConfirmed: function(text, functionToCall){
+    var thisMessage = "Are you sure?";
+    if(text){
+        thisMessage = text;
+    }
+    bootbox.confirm({
+        message: thisMessage,
+        callback: (proceed)=>{
+            if(proceed){
+                functionToCall()
+            }
+        }
+    });
+},
+
+dialogConfirm: function(text, functionToCall){
+    var thisMessage = "Do you want to proceed?";
+    if(text){
+        thisMessage = text;
+    }
+    bootbox.confirm({
+        message: thisMessage,
+        callback: (result)=>{
+            functionToCall(result);
+        }
+    })
+},
+
+runBasedOnInput: function(prompt, functionToCall){
+    var thisTitle = "Enter value:"
+    if(prompt){
+        thisTitle = prompt;
+    }
+    bootbox.prompt({
+        title: thisTitle,
+        callback: (result)=>{
+            functionToCall(result);
+        }
+    });
+}
+
+
+<!-- Bootbox for dialogs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>

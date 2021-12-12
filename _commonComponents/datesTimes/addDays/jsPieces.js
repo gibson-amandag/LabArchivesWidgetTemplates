@@ -1,7 +1,7 @@
 my_widget_script =
 {
     addEventListeners: function () {
-        $("#numDays").on("input", function () {
+        $("#numDays").on("input", ()=> {
             if ($("#startDate").val()) {
                 var startDateVal = $("#startDate").val();
                 var $newDate = $("#newDate");
@@ -12,7 +12,7 @@ my_widget_script =
             }
         });
 
-        $("#startDate").on("input", function () {
+        $("#startDate").on("input", ()=> {
             if ($("#numDays").val()) {
                 var startDateVal = $("#startDate").val();
                 var $newDate = $("#newDate");
@@ -57,12 +57,20 @@ my_widget_script =
      * numDays (number of days), and replaces the text in the $newDate element 
      * which can be either an id or a class with date string of that addition
      * 
-     * @param {*} $startDateVal - the value from the data input
-     * @param {*} $newDateClass - the element where the text with the date string will be printed. jQuery obj
+     * @param {*} startDateVal - the value from the data input
+     * @param {*} $newDate - the element where the text with the date string will be printed. jQuery obj
      * @param {*} numDays - number of days to add 
      */
-    addDays: function ($startDateVal, $newDateClass, numDays) {
-        var newDate = luxon.DateTime.fromISO($startDateVal).plus({days: numDays}).toISODate();
-        $newDateClass.text(newDate);
+   addDays: function (startDateVal, $newDate, numDays) {
+        var startDate = new Date(startDateVal);
+
+        var offset = new Date().getTimezoneOffset(); //get the offset of local time from GTC
+        // this is necessary because making a Date object from the input date string creates a date with time of midnight GTC
+        // for locales with different time zones, this means that the Date displayed could be the previous day
+
+        //Add the number of days (in ms) and offset (in ms) to the start Date (in ms) and make it a new date object
+        var newDate = new Date(startDate.getTime() + numDays * 24 * 60 * 60 * 1000 + offset * 60 * 1000);
+
+        $newDate.text(newDate.toDateString());
     }
 };

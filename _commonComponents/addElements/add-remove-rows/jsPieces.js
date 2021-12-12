@@ -47,12 +47,12 @@ my_widget_script =
     },
     
     addEventListeners: function () {
-        $("#addRow").on("click", function () {
+        $("#addRow").on("click", (e)=> {
             var $table //TO DO add table
             my_widget_script.createRow($table);
         });
 
-        $("#removeRow").on("click", function () {
+        $("#removeRow").on("click", (e)=> {
             var $table //TO DO add table
             my_widget_script.deleteRow($table);
         });
@@ -60,28 +60,28 @@ my_widget_script =
 
     setUpInitialState: function () {
         //row background based on check
-        $('.rowCheck').each(function () {
-            if ($(this).is(':checked')) {
-                $(this).closest("tr").css("background-color", "lightgrey");
+        $('.rowCheck').each((i, e)=> {
+            if ($(e).is(':checked')) {
+                $(e).closest("tr").css("background-color", "lightgrey");
             } else {
-                $(this).closest("tr").css("background-color", "");
+                $(e).closest("tr").css("background-color", "");
             }
         });
 
         //row select background based on selectio
-        $('.rowSelect').each(function () {
-            switch ($(this).val()) {
+        $('.rowSelect').each((i, e)=> {
+            switch ($(e).val()) {
                 case '':
-                    $(this).css("background-color", "");
+                    $(e).css("background-color", "");
                     break;
                 case "1":
-                    $(this).css("background-color", "lightgreen");
+                    $(e).css("background-color", "lightgreen");
                     break;
                 case "2":
-                    $(this).css("background-color", "skyblue");
+                    $(e).css("background-color", "skyblue");
                     break;
                 case "3":
-                    $(this).css("background-color", "lightpink");
+                    $(e).css("background-color", "lightpink");
                     break;
             }
         });
@@ -101,6 +101,108 @@ my_widget_script =
         return dynamicContent;
     },
     // ********************** END CUSTOM TO_JSON METHODS **********************
+
+    /**
+     * Run the supplied function if user presses OK
+     * 
+     * @param text The message to be displayed to the user. 
+     * @param functionToCall Function to run if user pressed OK
+     * 
+     * If no text is provided, "Are you sure?" is used
+     * Can supply a function with no parameters and no () after the name,
+     * or an anonymous function using function(){} or ()=>{}
+     * 
+     * Nothing happens if cancel or "X" is pressed
+     * 
+     * Example:
+     * my_widget_script.runIfConfirmed(
+            "Do you want to run the function?", 
+            ()=>{
+                console.log("pretend delete function");
+            }
+        );
+    */
+        runIfConfirmed: function(text, functionToCall){
+            var thisMessage = "Are you sure?";
+            if(text){
+                thisMessage = text;
+            }
+            bootbox.confirm({
+                message: thisMessage,
+                callback: (proceed)=>{
+                    if(proceed){
+                        functionToCall()
+                    }
+                }
+            });
+        },
+    
+        /**
+         * Confirm with user
+         * 
+         * @param text The message to display to user
+         * @param functionToCall Function to run, with the result (true/false) as a parameter
+         * 
+         * If no text is provided, "Do you wish to proceed?" is the default
+         * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
+         * 
+         * Example:
+         * my_widget_script.dialogConfirm(
+                "Make a choice:", 
+                (result)=>{ // arrow function, "this" still in context of button
+                    if(result){
+                        console.log("You chose OK");
+                    } else {
+                        console.log("You canceled or closed the dialog");
+                    }
+                }
+            );
+            */
+        dialogConfirm: function(text, functionToCall){
+            var thisMessage = "Do you want to proceed?";
+            if(text){
+                thisMessage = text;
+            }
+            bootbox.confirm({
+                message: thisMessage,
+                callback: (result)=>{
+                    functionToCall(result);
+                }
+            })
+        },
+    
+        /**
+         * Get user input for a function
+         * 
+         * @param prompt Text to provide to the user
+         * @param functionToCall Function to run, with the user input as a parameter
+         * 
+         * If no text is provided, "Enter value:" is used as default
+         * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
+         * 
+         * Example:
+         * my_widget_script.runBasedOnInput(
+                "Enter a number from 0-10", (result)=>{
+                    if(result <= 10 && result >= 0){
+                        console.log("You entered: " + result);
+                    } else {
+                        console.log("You did not enter an appropriate value");
+                    }
+                }
+            );
+            */ 
+        runBasedOnInput: function(prompt, functionToCall){
+            var thisTitle = "Enter value:"
+            if(prompt){
+                thisTitle = prompt;
+            }
+            bootbox.prompt({
+                title: thisTitle,
+                callback: (result)=>{
+                    functionToCall(result);
+                }
+            });
+        },
 
     /* -----------------------------------------------------------------------------
     ** This function creates a new row at the end of the specified table.
@@ -159,11 +261,11 @@ my_widget_script =
                         name: col4ID,
                         type: "checkbox",
                         "class": "rowCheck"
-                    }).on("change", function () { //make the background color of the row grey when checked
-                        if ($(this).is(":checked")) {
-                            $(this).closest("tr").css("background-color", "lightgrey");
+                    }).on("change", (e)=> { //make the background color of the row grey when checked
+                        if ($(e.currentTarget).is(":checked")) {
+                            $(e.currentTarget).closest("tr").css("background-color", "lightgrey");
                         } else {
-                            $(this).closest("tr").css("background-color", "");
+                            $(e.currentTarget).closest("tr").css("background-color", "");
                         }
                     })
                 )
@@ -178,19 +280,19 @@ my_widget_script =
                         "<option value='1'>Green</option>",
                         "<option value='2'>Blue</option>",
                         "<option value='3'>Red</option>"
-                    ).on("change", function () { //change the background color
-                        switch ($(this).val()) {
+                    ).on("change", (e)=> { //change the background color
+                        switch ($(e.currentTarget).val()) {
                             case '':
-                                $(this).css("background-color", "");
+                                $(e.currentTarget).css("background-color", "");
                                 break;
                             case "1":
-                                $(this).css("background-color", "lightgreen");
+                                $(e.currentTarget).css("background-color", "lightgreen");
                                 break;
                             case "2":
-                                $(this).css("background-color", "skyblue");
+                                $(e.currentTarget).css("background-color", "skyblue");
                                 break;
                             case "3":
-                                $(this).css("background-color", "lightpink");
+                                $(e.currentTarget).css("background-color", "lightpink");
                                 break;
                         }
                     })
@@ -212,19 +314,23 @@ my_widget_script =
         my_widget_script.resize();
     },
 
-    /* -----------------------------------------------------------------------------
-    ** This function deletes the last row of the table body for the given table
-    ** and then resizes the container and tableDiv.
-    ** -----------------------------------------------------------------------------
-    */
+    /**
+     * This function deletes the last row of the table body for the given table
+     * and then resizes the container and tableDiv.
+     * 
+     * 2021-11-29: Be careful with using this. There were some seemingly missing
+     * pieces in how this was implemented
+     *  */
     deleteRow: function ($table) {
-        var proceed = confirm("Are you sure you want to remove the row?");
-        if(proceed){
-            var lastRow = $(tableName).find("tbody tr").last();
-            $(lastRow).remove();
-    
-            //resize the container
-            my_widget_script.resize();
-        }
+        this.runIfConfirmed(
+            "Are you sure you want to remove the row?",
+            ()=>{
+                var $lastRow = $table.find("tbody tr").last();
+                $lastRow.remove();
+        
+                //resize the container
+                this.resize();
+            }
+        )
     }
 };
