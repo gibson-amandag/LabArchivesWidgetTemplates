@@ -9,8 +9,7 @@
 <!-- Load bootstrap java -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
     integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-    crossorigin="anonymous">
-</script>
+    crossorigin="anonymous"></script>
 <!-- Bootbox for dialogs -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <!-- Call no conflict to reassign this newer jQuery off of $ and jquery-->
@@ -45,11 +44,6 @@
     .fullWidth {
         width: 100%
     }
-
-    .entryPrint{
-        color: red;
-        font-size: larger;
-    }
 </style>
 
 <!-- TO DO Begin typing your HTML code here -->
@@ -60,42 +54,28 @@
             style="color:blue">#</span></p>
 </div>
 
-
 <!-- One example container for two column input that is responsive to window width -->
 <div class="container">
     <div class="row align-items-end">
-        <div class="myLeftCol">Disabled on view</div>
+        <div class="myLeftCol">Left Column</div>
         <!-- myLeftCol adds additional classes in init function-->
 
-        <div class="col"><input id="alertButton" name="alertbutton" type="button" value="Cause an alert!" class="fullWidth disableOnView" /></div>
+        <div class="col"><input id="myButton" name="mybutton" type="button" value="Click Me!" class="fullWidth disableOnView" /></div>
     </div>
 
     <div class="row align-items-end mt-2">
-        <div class="myLeftCol">Enabled on view</div>
+        <div class="myLeftCol">Row 2</div>
 
-        <div class="col">
-            <input type="button" value="Make a choice" id="confirmButton" name="confirmbutton" class="fullWidth"/>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="myLeftCol">Enabled on view</div>
-
-        <div class="col">
-            <input type="button" value="Enter a value" id="userEntryButton" name="userentrybutton" class="fullWidth"/>
-        </div>
-    </div>
-    <div class="row mt-2">
-        <div class="myLeftCol">&nbsp;</div>
-        <div class="col entryPrint">&nbsp;</div>
+        <div class="col"></div>
     </div>
     <div class="row mt-2">
         <div class="myLeftCol requiredLab">Date:</div>
         <div class="col"><input type="date" name="testdate" id="testDate" required/></div>
     </div>
     <div class="row mt-2">
-        <div class="myLeftCol needForTableLab">Time:</div>
+        <div class="myLeftCol">Time:</div>
         <div class="col">
-            <input type="time" name="testtime" id="testTime" pattern="[0-9]{2}:[0-9]{2}" class="needForTable"/>
+            <input type="time" name="testtime" id="testtime" pattern="[0-9]{2}:[0-9]{2}"/>
             <span class="validity"></span>
         </div>
     </div>
@@ -105,54 +85,18 @@
     </div>
 </div>
 
-<div class="container mt-2">
-    <div id="forCopy">&nbsp;</div>
-    <div id="errorMsg">&nbsp;</div>
-</div>
-
-<div class="container mt-2">
-    <div class="row">
-        <div class="col">
-            The information in the table will be automatically updated by entering data in the fields above.
-            <br/>Press the buttons to interact with or save the table data
-        </div>
-    </div>
-</div>
-
-<div class="container mt-2">
-    <div class="row mt-2">
-        <div class="col-12 col-sm-6 col-md-3"><input id="toggleTable1" name="toggletable1" type="button"
-                value="Show/Hide Table" class="fullWidth toggleTable" data-table="tableID"/>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-3"><input id="toCSV1" name="tocsv1" type="button" value="Save CSV"
-                class="fullWidth toCSV" data-table="tableID" /></div>
-        
-        <div class="col-12 col-sm-6 col-md-3">
-            <input id="copyDataButton1" name="copydatabutton1" type="button" value="Copy Data" class="fullWidth copyData" data-table="tableID"/>
-            <br />Copy Table Head? <input id="copyHead1" name="copyhead1" type="checkbox" class="copyHead" data-table="tableID"/>
-            <br />Transpose Table? <input id="transpose1" name="transpose1" type="checkbox" class="transpose" data-table="tableID" />
-        </div>
-    </div>
-</div>
+<!-- Error Message Div -->
+<div class="container" id="errorMsg">&nbsp;</div>
 
 <!-- Example Table Container that is responsive to window width, including for xs -->
 <div class="container mt-2">
     <div class="table-responsive xsTableDiv">
-        <table class="table" id="tableID">
+        <table class="table">
             <thead>
                 <tr>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Textarea</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td data-calc="testDate">&nbsp;</td>
-                    <td data-calc="testTime">&nbsp;</td>
-                    <td data-calc="testText">&nbsp;</td>
-                </tr>
             </tbody>
         </table>
         <p>&nbsp;</p>

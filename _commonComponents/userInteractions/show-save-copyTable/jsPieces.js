@@ -11,7 +11,8 @@ my_widget_script =
         $(".toggleTable").on("click", (e)=> {
             var tableID = $(e.currentTarget).data("table");
             var $table = $("#"+tableID);
-            this.toggleTableFuncs($table);
+            var $errorMsg = $("#errorMsg");
+            this.toggleTableFuncs($table, $errorMsg);
         });
 
         $('.toCSV').on("click", (e)=> {
@@ -92,18 +93,39 @@ my_widget_script =
         return tableSearch;
     },
 
+    //#region copy tables
     /**
      * This either shows or hides (toggles) the table provided as a parameter. 
      * It checks if the data is valid, but this doesn't stop it from running.
      * It resizes the widget in the process.
      * 
      * @param {*} $table - jQuery object for table
-     */
-    toggleTableFuncs: function ($table) {
-        this.resize();
-        this.data_valid_form();
+    **/
+     toggleTableFuncs: function ($table, $errorMsg) {
+        this.data_valid_form($errorMsg);
         $table.toggle();
-        this.parent_class.resize_container();
+        this.resize();
+    },
+
+    /**
+     * Set of functions when toCSVButton clicked
+     * 
+     * Checked if data is valid, exports the table to a CSV
+     * Updates the error message accordingly
+     * 
+     * @param {string} fileName - fileName for the CSV that will be produced
+     * @param {string} tableID - tableID as a string for the table that will be copied
+     * @param $errorMsg - error message div as jQuery object
+    **/
+    toCSVFuncs: function (fileName, tableID, $errorMsg) {
+        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
+
+        if (data_valid) {
+            this.exportTableToCSV(fileName, tableID);
+            $errorMsg.html("<span style='color:grey; font-size:24px;'>Saved successfully</span>");
+        } else {
+            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Did not export</span>");
+        }
     },
 
     /**
@@ -155,23 +177,51 @@ my_widget_script =
      * @param {string} table the id of the table that will be exported
      */
     exportTableToCSV: function (filename, table) {
-        var csv = [];
-        var datatable = document.getElementById(table);
-        var rows = datatable.querySelectorAll("tr");
+        var tableArray = this.getTableArray($("#"+ table), copyHead = true, transpose = false);
+        var tableString = this.convertRowArrayToString(tableArray, ",", "\n");
 
-        for (var i = 0; i < rows.length; i++) {
-            var row = [], cols = rows[i].querySelectorAll("td, th");
-
-            for (var j = 0; j < cols.length; j++) {
-                var cellText = '"' + cols[j].innerText + '"'; //add to protect from commas within cell
-                row.push(cellText);
-            };
-
-            csv.push(row.join(","));
-        }
+        // One option that works with Excel, but may not be universal to protect against commas in the fields
+        // var tableString = this.convertRowArrayToString(tableArray, "\t", "\n");
+        // tableString = "sep=\t\n" + tableString;
 
         // Download CSV file
-        this.downloadCSV(csv.join("\n"), filename);
+        this.downloadCSV(tableString, filename);
+    },
+
+    /**
+     * The steps that should be taken when the copy data button is pressed
+     * Checks if the $copyHead is checked, and then
+     * checks if the data is valid. If it is, it shows the table, resizes, and then
+     * copies the table (via a temporary textarea that is then removed). 
+     * 
+     * @param $copyHead - checkbox for whether or not to copy the table head as jQuery object
+     * @param $tableToCopy - table to copy as jQuery object
+     * @param $tableDiv - div containing table to copy
+     * @param $errorMsg - error message div as jQuery object
+     * @param $divForCopy - div where the output should copy to
+     * @param $transpose - checkbox for whether or not to transpose the table head as jQuery object
+     */
+     copyDataFuncs: function ($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose){
+        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
+        var copyHead = false, transpose = false;
+
+        //only copy the heading when the input box is checked
+        if ($copyHead.is(":checked")) {
+            copyHead = true;
+        }
+
+        if ($transpose.is(":checked")) {
+            transpose = true;
+        }
+
+        if (data_valid) { //if data is valid
+            $tableDiv.show(); //show the table
+            this.resize(); //resize
+            this.copyTable($tableToCopy, copyHead, $divForCopy, $errorMsg, transpose); //copy table
+            $errorMsg.html("<span style='color:grey; font-size:24px;'>Copied successfully</span>") //update error message
+        } else {
+            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Nothing was copied</span>"); //add to error message
+        }
     },
 
     /**
@@ -181,24 +231,34 @@ my_widget_script =
      * the verbatim string "textarea" so this must be separated as "text" + "area"
      * to avoid errors.
      * 
-     * If copying a table that has form inputs, then need to refer to the children of 
-     * <td> tags, and get the values by using .val() instead of .text()
+     * If copying a table that has form inputs, you
      * 
      * If copying a table that could have multiple table rows (<tr>), the use the 
      * \n new line separator
      * 
-     * The temporary <textarea> is appended to the HTML form, focused on, and selected.
-     * Note that this moves the literal page focus, so having this append near the 
-     * button that calls this function is best. After the <textarea> is copied, it is
-     * then removed from the page.
      * @param {*} $table - jQuery object for the table that will be copied
      * @param {*} copyHead - true/false for whether or not the table head should be copied
      * @param {*} $divForCopy - where the temp textarea should be added
+     * @param {*} $errorMsg - where to update the user
      * @param {*} transpose - true if table should be transposed
      */
-     
-     copyTable: function ($table, copyHead, $divForCopy, transpose) {
-        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
+     copyTable: function ($table, copyHead, $divForCopy, $errorMsg, transpose) {
+        var tableArray = this.getTableArray($table, copyHead, transpose);
+        var tableString = this.convertRowArrayToString(tableArray, "\t", "\n");
+        this.copyStringToClipboard(tableString, $divForCopy, $errorMsg);
+    },
+
+    /**
+     * Get the items from an HTML table into an array
+     * 
+     * If the table has form inputs, then you would need to adjust the $(e).text() to reflect .val() instead
+     * 
+     * @param {*} $table The table element that is to be read
+     * @param {*} copyHead Whether or not to include the head of the table
+     * @param {*} transpose Whether or not to tanspose the table
+     * @returns the table as an array, with the each row being and element, and each row as an array where each cell is an element
+     */
+    getTableArray: function ($table, copyHead, transpose) {
         var rows = [];
         var rowNum = 0;
         // If you copying the head of the table
@@ -237,92 +297,64 @@ my_widget_script =
             // If table is not being transposed, add one to the row number for each row
             if(!transpose){rowNum++;}
         });
+        return(rows);
+    },
 
-        // For each row, join together all of the elements of the array with a \t to separate them (tab)
-        for(var i = 0; i < rows.length; i++){
-            rows[i] = rows[i].join("\t");
+    /**
+     * Take an array from a table and convert it to a string for export to clipboard or saving to csv
+     * @param {*} rowArray An array where each row is an element, and each row is also an array containing each cell as an element
+     * @param {*} cellSepString The string that should be used to separate each cell (column)
+     * @param {*} newRowString The string that should be used to separate each row
+     * @returns A single string of the table
+     */
+    convertRowArrayToString: function(rowArray, cellSepString = "\t", newRowString = "\n"){
+        var rowString = [];
+        rowArray.forEach((row)=>{
+            if(row.length){
+                row.forEach((cell, i)=>{
+                    if(cell.includes(cellSepString) || cell.includes(newRowString)){
+                        row[i] = '"' + cell + '"'; // protect if includes separator
+                    }
+                });
+                rowString.push(row.join(cellSepString));
+            }
+        });
+        var tableString = rowString.join(newRowString);
+        return(tableString)
+    },
+
+    /**
+     * This function will copy a string to the clipboard. If the string is blank, changes it to a single space
+     * otherwise nothing is copied
+     * 
+     * The temporary <textarea> is appended to the HTML form and selected.
+     * After the <textarea> is copied, it is then removed from the page.
+     * 
+     * @param {*} textStr The string that is to be copied to the clipboard
+     * @param {*} $divForCopy The div on the page that should be used to create the temporary textarea
+     * @param {*} $errorMsg Where messages to the user should be printed regarding status of the copy
+     */
+    copyStringToClipboard: function(textStr, $divForCopy, $errorMsg){
+        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
+
+        if(textStr){
+            errorStr = "Copy attempted";
+            $errorMsg.html("<span style='color:grey; font-size:24px;'>Copy attempted</span>");
+        } else {
+            textStr = " ";
+            $errorMsg.html("<span style='color:red; font-size:24px;'>Nothing to copy</span>");
         }
+        $temp.text(textStr);
 
-        // Add each row to the temporary text area using \n (new line) to separate them
-        $temp.append(rows.join("\n"));
-        // Append the textarea to the div for copy, then select it
         $temp.appendTo($divForCopy).select();
-        // Copy the "selected" text
         document.execCommand("copy");
-        $temp.remove(); //remove temp
+        $temp.remove();
+        this.resize();
+        
         // Doesn't work within LA b/c of permissions, but would be easier way to copy w/o appending to page
         // navigator.clipboard.writeText(rows.join("\n")); 
     },
+    // #endregion copy tables
 
-    /**
-     * Set of functions when toggleTableButton clicked
-     * resize, run data_valid_form,
-     * toggle the table (show/hide), resize the container
-     * 
-     * @param {*} $table - jQuery object that is the table that will be shown/hidden
-     */
-    toggleTableFuncs: function ($table) {
-        this.resize();
-        this.data_valid_form(); //run to give error, but allow to show regardless
-        $table.toggle();
-        this.parent_class.resize_container();
-    },
-
-    /**
-     * Set of functions when toCSVButton clicked
-     * 
-     * Checked if data is valid, exports the table to a CSV
-     * Updates the error message accordingly
-     * 
-     * @param {string} fileName - fileName for the CSV that will be produced
-     * @param {string} tableID - tableID as a string for the table that will be copied
-     * @param $errorMsg - error message div as jQuery object
-     */
-    toCSVFuncs: function (fileName, tableID, $errorMsg) {
-        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
-
-        if (data_valid) {
-            this.exportTableToCSV(fileName, tableID);
-            $errorMsg.html("<span style='color:grey; font-size:24px;'>Saved successfully</span>");
-        } else {
-            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Did not export</span>");
-        }
-    },
-
-    /**
-     * The steps that should be taken when the copy data button is pressed
-     * Checks if the $copyHead is checked, and then
-     * checks if the data is valid. If it is, it shows the table, resizes, and then
-     * copies the table (via a temporary textarea that is then removed). 
-     * 
-     * @param $copyHead - checkbox for whether or not to copy the table head as jQuery object
-     * @param $tableToCopy - table to copy as jQuery object
-     * @param $tableDiv - div containing table to copy
-     * @param $errorMsg - error message div as jQuery object
-     * @param $divForCopy - div where the output should copy to
-     * @param $transpose - checkbox for whether or not to transpose the table head as jQuery object
-     */
-     copyDataFuncs: function ($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose){
-        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
-        var copyHead = false, transpose = false;
-
-        //only copy the heading when the input box is checked
-        if ($copyHead.is(":checked")) {
-            copyHead = true;
-        }
-
-        if ($transpose.is(":checked")) {
-            transpose = true;
-        }
-
-        if (data_valid) { //if data is valid
-            $tableDiv.show(); //show the table
-            this.resize(); //resize
-            this.copyTable($tableToCopy, copyHead, $divForCopy, transpose); //copy table
-            $errorMsg.html("<span style='color:grey; font-size:24px;'>Copied successfully</span>") //update error message
-        } else {
-            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Nothing was copied</span>"); //add to error message
-        }
-    },
 };
 

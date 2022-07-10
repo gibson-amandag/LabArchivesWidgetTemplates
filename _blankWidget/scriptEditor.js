@@ -18,7 +18,7 @@ my_widget_script =
         //Get the parsed JSON data
         var parsedJson = this.parseInitJson(json_data);
 
-        //Uncomment to print parsedJson to console
+        //Uncomment to print parsedJson to consol
         //console.log("init", parsedJson);
 
         //check parsedJson for info not contained in form inputs and reinitialize
@@ -41,9 +41,6 @@ my_widget_script =
 
         //adjust form design and buttons based on mode
         this.adjustForMode(mode);
-
-        // Print to console log if any elements don't have a required name attribute
-        this.checkForNames();
     },
     
     to_json: function () {
@@ -244,34 +241,7 @@ my_widget_script =
      * This could include when buttons are clicked or when inputs change.
      */
     addEventListeners: function () {
-        $("#alertButton").on("click", (e)=>{
-            bootbox.alert("You've pressed an alert button");
-        });
-
-        $("#confirmButton").on("click", (e)=>{
-            this.dialogConfirm(
-                "Make a choice:", 
-                (result)=>{ // arrow function, "this" still in context of button
-                    if(result){
-                        $(".entryPrint").text("You chose OK");
-                    } else {
-                        $(".entryPrint").text("You canceled or closed the dialog");
-                    }
-                }
-            );
-        });
-
-        $("#userEntryButton").on("click", (e)=>{
-            this.runBasedOnInput(
-                "Enter a number from 0-10", (result)=>{
-                    if(result <= 10 && result >= 0){
-                        $(".entryPrint").text("You entered: " + result);
-                    } else {
-                        $(".entryPrint").text("You did not enter an appropriate value");
-                    }
-                }
-            );
-        })
+        
     },
 
     /**
@@ -383,7 +353,7 @@ my_widget_script =
 
 
         $("input[type='date']").prop("placeholder", "YYYY-MM-DD").on("change", (e)=> {
-            this.checkDateFormat($(e.currentTarget));
+            this.checkDateFormat($(e.target));
         });
         
         $("input[type='time']").prop("placeholder", "hh:mm").on("change", (e)=> {
@@ -398,63 +368,6 @@ my_widget_script =
             this.resize();
         });
 
-        $(".toggleTable").on("click", (e)=> {
-            var tableID = $(e.currentTarget).data("table");
-            var $table = $("#"+tableID);
-            this.toggleTableFuncs($table);
-        });
-
-        $('.toCSV').on("click", (e)=> {
-            var tableID = $(e.currentTarget).data("table");
-            var dateToday = luxon.DateTime.now().toISODate(); // Luxon has to be added in HTML
-            var fileName = "table_"+tableID+"_"+dateToday;
-            var $errorMsg = $("#errorMsg");
-            
-            this.toCSVFuncs(fileName, tableID, $errorMsg);
-        });
-
-       $(".copyData").on("click", (e)=> {
-            var tableID = $(e.currentTarget).data("table");
-            // Get the data-table text string to add to the query to find the table
-            var tableSearch = this.tableSearch(tableID);
-            // Find the element that tells whether or not to copy the table
-            var $copyHead = $(".copyHead"+tableSearch);
-            var $transpose = $(".transpose"+tableSearch);
-            var $tableToCopy = $("#"+tableID);
-            var $tableDiv = $tableToCopy.parent();
-            var $errorMsg = $("#errorMsg");
-            var $divForCopy = $("#forCopy");
-            
-            this.copyDataFuncs($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose)
-        });
-
-        // Generic update when any part of the form has user input
-        $("#the_form").on("input", (e)=>{
-            // Add a watch attribute to elements if need to be more specific, such as
-            // to specify a day or a mouse to update
-            if($(e.target).data("watch")){
-                this.watchValue($(e.target));
-            } else{
-                // the target will be whatever is currently receiving input
-                // This will update any field with a "data-calc" attribute that
-                // matches the id of the target element
-                this.updateCalcFromEl(e.target);
-            }
-        });
-        
-        // Run this first incase calcValues needs to overrule
-        $("input, select, textarea").each((i,e)=>{
-            if($(e).attr("type")!= "button"){
-                if($(e).data("watch")){
-                    this.watchValue($(e));
-                } else {
-                    // This will update any field with a "data-calc" attribute that
-                    // matches the id of the target element
-                    this.updateCalcFromEl(e);   
-                }
-            }
-        });
-
         this.resize();
     },
 
@@ -465,20 +378,6 @@ my_widget_script =
     resize: function () {
         //resize the container
         this.parent_class.resize_container();
-    },
-
-    checkForNames: function() {
-        $("input, select, textarea").each((i,e)=>{
-            var thisName = $(e).attr("name");
-            if(!thisName){
-                console.log("There is no name attribute for: ", e.id);
-            } else {
-                var hasUpper = /[A-Z]/.test(thisName);
-                if(hasUpper){
-                    console.log("The name contains an uppercase letter for: ", e.id);
-                }
-            }
-        })
     },
     // ********************** END CUSTOM INIT METHODS **********************
 
@@ -509,46 +408,34 @@ my_widget_script =
      * source: https://stackoverflow.com/questions/18495310/checking-if-an-input-field-is-required-using-jquery
      * -----------------------------------------------------------------------------
      */
-    data_valid_form: function ($errorMsg) {
+    data_valid_form: function () {
         var valid = true; //begin with a valid value of true
-        var fail_log = $("<div></div>").append("Missing values for:");
-        var name; //create a name variable
+        //var fail_log = ''; //begin with an empty fail log
+        //var name; //create a name variable
 
         //search the_form for all elements that are of class "needForForm"
         $('.needForTable').each((i, e)=> {
             if (!$(e).val()) { //if there is not a value for this input
                 valid = false; //change valid to false
-                name = $(e).attr('id'); //replace the name variable with the id attribute of this element
-                fail_log.append("<br/>"+name)
-                // fail_log += name + " is required \n"; //add to the fail log that this name is required
+                //name = $(e).attr('id'); //replace the name variable with the id attribute of this element
+                //fail_log += name + " is required \n"; //add to the fail log that this name is required
             }
         });
 
         if (!valid) {
-            $errorMsg.html(
-                "<span style='color:red; font-size:36px;'>" +
-                    "Please fill out all elements marked by a"+
-                    "</span><span style='color:blue; font-size:36px;'>" +
-                    " blue #"+
-                "</span>"
-            );
-            $errorMsg.append(fail_log);
-            // console.log("fail log\n", fail_log)    
+            $("#errorMsg").html("<span style='color:red; font-size:36px;'>Please fill out all elements marked by a</span><span style='color:blue; font-size:36px;'> blue #</span>");
         } else {
-            $errorMsg.html("");
+            $("#errorMsg").html("");
         }
 
-        this.resize();
         return valid;
     },
 
-    //#region dialog boxes
     /**
      * Run the supplied function if user presses OK
      * 
      * @param text The message to be displayed to the user. 
      * @param functionToCall Function to run if user pressed OK
-     * @param elForHeight Element to based the height of the dialog box on
      * 
      * If no text is provided, "Are you sure?" is used
      * Can supply a function with no parameters and no () after the name,
@@ -556,25 +443,18 @@ my_widget_script =
      * 
      * Nothing happens if cancel or "X" is pressed
      * 
-     * If elForHeight is left blank, height is auto
-     * 
      * Example:
-     * this.runIfConfirmed(
+     * my_widget_script.runIfConfirmed(
             "Do you want to run the function?", 
             ()=>{
                 console.log("pretend delete function");
             }
         );
     */
-    runIfConfirmed: function(text, functionToCall, elForHeight = null){
+    runIfConfirmed: function(text, functionToCall){
         var thisMessage = "Are you sure?";
         if(text){
             thisMessage = text;
-        }
-        var top = "auto";
-        if(elForHeight){
-            // Used to change the position of the modal dialog box
-            top = elForHeight.offsetTop + "px";
         }
         bootbox.confirm({
             message: thisMessage,
@@ -584,7 +464,6 @@ my_widget_script =
                 }
             }
         });
-        $(".modal-dialog").css("top", top);
     },
 
     /**
@@ -592,15 +471,12 @@ my_widget_script =
      * 
      * @param text The message to display to user
      * @param functionToCall Function to run, with the result (true/false) as a parameter
-     * @param elForHeight Element to based the height of the dialog box on
      * 
      * If no text is provided, "Do you wish to proceed?" is the default
      * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
      * 
-     * If elForHeight is left blank, height is auto
-     * 
      * Example:
-     * this.dialogConfirm(
+     * my_widget_script.dialogConfirm(
             "Make a choice:", 
             (result)=>{ // arrow function, "this" still in context of button
                 if(result){
@@ -611,23 +487,17 @@ my_widget_script =
             }
         );
         */
-    dialogConfirm: function(text, functionToCall, elForHeight = null){
+    dialogConfirm: function(text, functionToCall){
         var thisMessage = "Do you want to proceed?";
         if(text){
             thisMessage = text;
-        }
-        var top = "auto";
-        if(elForHeight){
-            // Used to change the position of the modal dialog box
-            top = elForHeight.offsetTop + "px";
         }
         bootbox.confirm({
             message: thisMessage,
             callback: (result)=>{
                 functionToCall(result);
             }
-        });
-        $(".modal-dialog").css("top", top);
+        })
     },
 
     /**
@@ -635,15 +505,12 @@ my_widget_script =
      * 
      * @param prompt Text to provide to the user
      * @param functionToCall Function to run, with the user input as a parameter
-     * @param elForHeight Element to based the height of the dialog box on
      * 
      * If no text is provided, "Enter value:" is used as default
      * Use an anonymous function, function(result){} or (result)=>{}. Then the function can use the result to decide what to do
      * 
-     * If elForHeight is left blank, height is auto
-     *  
      * Example:
-     * this.runBasedOnInput(
+     * my_widget_script.runBasedOnInput(
             "Enter a number from 0-10", (result)=>{
                 if(result <= 10 && result >= 0){
                     console.log("You entered: " + result);
@@ -653,15 +520,10 @@ my_widget_script =
             }
         );
         */ 
-    runBasedOnInput: function(prompt, functionToCall, elForHeight = null){
+    runBasedOnInput: function(prompt, functionToCall){
         var thisTitle = "Enter value:"
         if(prompt){
             thisTitle = prompt;
-        }
-        var top = "auto";
-        if(elForHeight){
-            // Used to change the position of the modal dialog box
-            top = elForHeight.offsetTop + "px";
         }
         bootbox.prompt({
             title: thisTitle,
@@ -669,350 +531,5 @@ my_widget_script =
                 functionToCall(result);
             }
         });
-        $(".modal-dialog").css("top", top);
-    },
-    //#endregion dialog boxes
-
-    checkInArray: function (searchVal, array){
-        var proceed = $.inArray(searchVal, array) !== -1;
-        return proceed
-    },
-
-    /**
-     * Build a string for search for a HTML element that has a particular data value
-     * ex: mouseSearch = dataSearch("mouse", 1) -> mouseSearch = "[data-mouse=1]"
-     * $(".mouseID" + mouseSearch) would find an element with class mouseID and data-mouse = 1
-     * 
-     * @param {*} dataName String for the name of the data attribute within the HTML form 
-     * @param {*} dataValue Value you want to match
-     * @returns A text string that can be added to a jQuery search for an element that matches the data value
-    **/
-    dataSearch: function (dataName, dataValue) {
-        var dataSearch = "[data-" + dataName + "='" + dataValue + "']";
-        return dataSearch
-    },
-
-    /**
-     * Builds a string "[data-table=table]". See dataSearch explanation
-     * @param {*} table string for data-table value that you want to match
-     * @returns 
-    **/
-    tableSearch: function (table){
-        var tableSearch = this.dataSearch("table", table);
-        return tableSearch;
-    },
-
-    calcSearch: function (calc) {
-        var calcSearch = this.dataSearch("calc", calc);
-        return calcSearch;
-    },
-
-    daySearch: function (day) {
-        var daySearch = this.dataSearch("day", day);
-        return daySearch;
-    },
-
-    mouseSearch: function (mouse) {
-        var mouseSearch = this.dataSearch("mouse", mouse);
-        return mouseSearch;
-    },
-
-    updateCalcFromEl: function (el) {
-        // Get the element id
-        var calc = el.id;
-        // Get the element value
-        var val = el.value;
-        // Get the data-calc search string to match id
-        var calcSearch = this.calcSearch(calc);
-
-        // Update any element that matches the calc search with the value
-        $(calcSearch).html(val);
-        this.resize();
-    },
-
-    updateCalcFromVal: function(calc, val){
-        var calcSearch = this.calcSearch(calc);
-        $(calcSearch).text(val);
-        this.resize();
-    },
-
-    watchValue: function ($el) {
-        var watch = $el.data("watch");
-        var calcSearch = my_widget_script.calcSearch(watch);
-        var dayNum = $el.data("day");
-        var mouseNum = $el.data("mouse");
-        var val = $el.val();
-        if(dayNum){
-            calcSearch += my_widget_script.daySearch(dayNum);
-        }
-        if(mouseNum){
-            calcSearch += my_widget_script.mouseSearch(mouseNum);
-        }
-        if(watch == "mouse"){
-            if(!val){
-                val = "Mouse " + mouseNum;
-            }
-        }
-        $(calcSearch).html(val);
-
-        my_widget_script.resize();
-    },
-
-    //#region copy tables
-    /**
-     * This either shows or hides (toggles) the table provided as a parameter. 
-     * It checks if the data is valid, but this doesn't stop it from running.
-     * It resizes the widget in the process.
-     * 
-     * @param {*} $table - jQuery object for table
-    **/
-    toggleTableFuncs: function ($table) {
-        this.data_valid_form($("#errorMsg"));
-        $table.toggle();
-        this.resize();
-    },
-
-    /**
-     * Set of functions when toCSVButton clicked
-     * 
-     * Checked if data is valid, exports the table to a CSV
-     * Updates the error message accordingly
-     * 
-     * @param {string} fileName - fileName for the CSV that will be produced
-     * @param {string} tableID - tableID as a string for the table that will be copied
-     * @param $errorMsg - error message div as jQuery object
-    **/
-    toCSVFuncs: function (fileName, tableID, $errorMsg) {
-        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
-
-        if (data_valid) {
-            this.exportTableToCSV(fileName, tableID);
-            $errorMsg.html("<span style='color:grey; font-size:24px;'>Saved successfully</span>");
-        } else {
-            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Did not export</span>");
-        }
-    },
-
-    /**
-     * This function takes a csv element and filename that are passed from the
-     * exportTableToCSV function.
-     * 
-     * This creates a csvFile and builds a download link that references this file.
-     * The download link is "clicked" by the function to prompt the browser to 
-     * download this file
-     * 
-     * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
-     * 
-     * @param {*} csv - This is the csv passed from the exportToCSV function
-     * @param {*} filename - This is the name of the file passed from exportToCSV function
-     */
-    downloadCSV: function (csv, filename) {
-        var csvFile;
-        var downloadLink;
-
-        // CSV file
-        csvFile = new Blob([csv], { type: "text/csv" });
-
-        // Download link
-        downloadLink = document.createElement("a");
-
-        // File name
-        downloadLink.download = filename;
-
-        // Create a link to the file
-        downloadLink.href = window.URL.createObjectURL(csvFile);
-
-        // Hide download link
-        downloadLink.style.display = "none";
-
-        // Add the link to DOM
-        document.body.appendChild(downloadLink);
-
-        // Click download link
-        downloadLink.click();
-    },
-    
-    /**
-     * This function takes a filename and table name (both strings) as input
-     * It then creates a csv element from the table
-     * This csv element is passed to the downloadCSV function along with the filename
-     * 
-     * source: https://www.codexworld.com/export-html-table-data-to-csv-using-javascript/
-     * @param {string} filename the name of the CSV file that will be downloaded
-     * @param {string} table the id of the table that will be exported
-     */
-    exportTableToCSV: function (filename, table) {
-        var csv = [];
-        var datatable = document.getElementById(table);
-        var rows = datatable.querySelectorAll("tr");
-
-        for (var i = 0; i < rows.length; i++) {
-            var row = [], cols = rows[i].querySelectorAll("td, th");
-
-            for (var j = 0; j < cols.length; j++) {
-                var cellText = '"' + cols[j].innerText + '"'; //add to protect from commas within cell
-                row.push(cellText);
-            };
-
-            csv.push(row.join(","));
-        }
-
-        // Download CSV file
-        this.downloadCSV(csv.join("\n"), filename);
-    },
-
-    /**
-     * The steps that should be taken when the copy data button is pressed
-     * Checks if the $copyHead is checked, and then
-     * checks if the data is valid. If it is, it shows the table, resizes, and then
-     * copies the table (via a temporary textarea that is then removed). 
-     * 
-     * @param $copyHead - checkbox for whether or not to copy the table head as jQuery object
-     * @param $tableToCopy - table to copy as jQuery object
-     * @param $tableDiv - div containing table to copy
-     * @param $errorMsg - error message div as jQuery object
-     * @param $divForCopy - div where the output should copy to
-     * @param $transpose - checkbox for whether or not to transpose the table head as jQuery object
-     */
-     copyDataFuncs: function ($copyHead, $tableToCopy, $tableDiv, $errorMsg, $divForCopy, $transpose){
-        var data_valid = this.data_valid_form($errorMsg); // update data_valid_form to print to specific error field
-        var copyHead = false, transpose = false;
-
-        //only copy the heading when the input box is checked
-        if ($copyHead.is(":checked")) {
-            copyHead = true;
-        }
-
-        if ($transpose.is(":checked")) {
-            transpose = true;
-        }
-
-        if (data_valid) { //if data is valid
-            $tableDiv.show(); //show the table
-            this.resize(); //resize
-            this.copyTable($tableToCopy, copyHead, $divForCopy, transpose); //copy table
-            $errorMsg.html("<span style='color:grey; font-size:24px;'>Copied attempted</span>") //update error message
-        } else {
-            $errorMsg.append("<br/><span style='color:grey; font-size:24px;'>Nothing was copied</span>"); //add to error message
-        }
-    },
-
-    /**
-     * This function creates a temporary textarea and then appends the contents of the
-     * specified table body to this textarea, separating each cell with a tab (\t).
-     * Because the script editor in LA is within a <textarea> the script cannot contain
-     * the verbatim string "textarea" so this must be separated as "text" + "area"
-     * to avoid errors.
-     * 
-     * If copying a table that has form inputs, then need to refer to the children of 
-     * <td> tags, and get the values by using .val() instead of .text()
-     * 
-     * If copying a table that could have multiple table rows (<tr>), the use the 
-     * \n new line separator
-     * 
-     * The temporary <textarea> is appended to the HTML form, focused on, and selected.
-     * Note that this moves the literal page focus, so having this append near the 
-     * button that calls this function is best. After the <textarea> is copied, it is
-     * then removed from the page.
-     * @param {*} $table - jQuery object for the table that will be copied
-     * @param {*} copyHead - true/false for whether or not the table head should be copied
-     * @param {*} $divForCopy - where the temp textarea should be added
-     * @param {*} transpose - true if table should be transposed
-     */
-     
-     copyTable: function ($table, copyHead, $divForCopy, transpose) {
-        var $temp = $("<text" + "area style='opacity:0;'></text" + "area>");
-        var rows = [];
-        var rowNum = 0;
-        // If you copying the head of the table
-        if (copyHead) {
-            // Find thead and then all children rows
-            $table.find("thead").children("tr").each((i,e)=> {
-                // If the table is being transposed, start the row number at 0 for each new row
-                if(transpose){rowNum = 0;}
-                // For each row, find each td or th element (table cell)
-                $(e).find("td, th").each((i,e)=> {
-                    // If there's not yet an array for this row, make an empty one
-                    if(rows[rowNum]===undefined){rows[rowNum] = []}
-                    // Add the text of each cell to the row's array
-                    rows[rowNum].push($(e).text());
-                    // If table is being transposed, add one to the row number for each cell
-                    if(transpose){rowNum++;}
-                });
-                // If table is not being transposed, add one to the row number for each row
-                if(!transpose){rowNum++;}
-            });
-        }
-
-        // Find each row in the table body
-        $table.find("tbody").children("tr").each((i,e)=> {
-            // If transposing, start the row number at 0 for each new row
-            if(transpose){rowNum = 0;}
-            // Find each cell within the row
-            $(e).find("td, th").each((i,e)=> {
-                // If there's not yet an array for this row, make an empty one
-                if(rows[rowNum]===undefined){rows[rowNum] = []}
-                // Add the text of each cell to the row's array
-                rows[rowNum].push($(e).text());
-                // If the table is being transposed, add one to the row number for each cell
-                if(transpose){rowNum++;}
-            });
-            // If table is not being transposed, add one to the row number for each row
-            if(!transpose){rowNum++;}
-        });
-
-        // For each row, join together all of the elements of the array with a \t to separate them (tab)
-        for(var i = 0; i < rows.length; i++){
-            rows[i] = rows[i].join("\t");
-        }
-
-        // Add each row to the temporary text area using \n (new line) to separate them
-        $temp.append(rows.join("\n"));
-        // Append the textarea to the div for copy, then select it
-        $temp.appendTo($divForCopy).select();
-        // Copy the "selected" text
-        document.execCommand("copy");
-        $temp.remove(); //remove temp
-        // Doesn't work within LA b/c of permissions, but would be easier way to copy w/o appending to page
-        // navigator.clipboard.writeText(rows.join("\n")); 
-    },
-    //#endregion copy tables
-
-    //#region cards
-    toggleCard: function ($cardHead) {
-        // console.log($cardHead.next());
-        $cardHead.next().toggleClass("collapse");
-        $cardHead.next().find("textarea.autoAdjust").each((i,e)=> {
-            if(! $(e).is(":hidden")) {
-                e.setAttribute('style', 'height:' + (e.scrollHeight) + 'px;overflow-y:hidden;'); //add "display:inline-block"; if not working for ifOther textboxes in cards
-            } 
-        });
-        this.resize();
-    },
-
-    makeCard: function ($div, cardHeadContent, cardBodyContent) {
-        // Add extras to header, such as classes or data attributes in calling function after making the card
-        $div.append(
-            $("<div></div>", {
-                "class": "card"
-            }).append(
-                $("<button></button>", {
-                    "type": "button",
-                    "class": "card-header",
-                }).on("click", (e)=> {
-                    this.toggleCard($(e.currentTarget));
-                }).append(cardHeadContent)
-            ).append(
-                $("<div></div>", {
-                    "class": "card-body collapse"
-                }).append(
-                    cardBodyContent
-                )
-            )
-        )
-        this.resize();
-    },
-    //#endregion cards
-
-
+    }
 };
