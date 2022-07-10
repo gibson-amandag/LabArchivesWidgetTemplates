@@ -1,0 +1,196 @@
+<!-- #region HTML -->
+<!-- Luxon Date Handling -->
+<script src="https://cdn.jsdelivr.net/npm/luxon@1.26.0/build/global/luxon.min.js" integrity="sha256-4sbTzmCCW9LGrIh5OsN8V5Pfdad1F1MwhLAOyXKnsE0=" crossorigin="anonymous"></script>
+<!-- Bootstrap CSS -->
+<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet" />
+<!-- Load jQuery for Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"
+    integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+<!-- Load bootstrap java -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous">
+</script>
+<!-- Papa Parse for CSVs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js" integrity="sha512-SGWgwwRA8xZgEoKiex3UubkSkV1zSE1BS6O4pXcaxcNtUlQsOmOmhVnDwIvqGRfEmuz83tIGL13cXMZn6upPyg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Bootbox for dialogs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/5.5.2/bootbox.min.js" integrity="sha512-RdSPYh1WA6BF0RhpisYJVYkOyTzK4HwofJ3Q7ivt/jkpW6Vc8AurL1R+4AUcvn9IwEKAPm/fk7qFZW3OuiUDeg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<!-- Call no conflict to reassign this newer jQuery off of $ and jquery-->
+<script>
+    var $jq351 = jQuery.noConflict(true);
+</script>
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* responsive table doesn't work with xs screen sizes for some reason, so apply a specific width for these */
+    @media (max-width: 576px) {
+        .xsTableDiv {
+            width: 300px !important;
+            overflow-x: scroll;
+        }
+    }
+
+    table {
+        border: 2px solid black;
+    }
+
+    th {
+        padding: 5px;
+        border: 2px solid black;
+    }
+
+    td {
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .fullWidth {
+        width: 100%;
+    }
+
+    .make100{
+        width: 100vw;
+    }
+</style>
+
+<!-- TO DO Begin typing your HTML code here -->
+<div class="make100">
+<div class="container hideView">
+    <p>Elements that are required to save this page are marked with a red asterisk <span
+            style="color:red">*</span><br />
+        Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span
+            style="color:blue">#</span></p>
+</div>
+
+<div class="container mt-2">
+    <div class="row mt-2 hideView">
+        <div class="myLeftCol">
+            Make a new mouse card
+        </div>
+        <div class="col">
+            <input type="button" value="Add mouse" id="addMouse" name="addmouse" class="addMouse fullWidth disableOnView" />
+        </div>
+    </div>
+    <div class="row mt-2 mouseInfo">
+        &nbsp;
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div class="row">
+        <h4 class="col">Mouse Info:</h4>
+    </div>
+    <div class="row mt-2">
+        <div class="col-12 col-sm-6 col-md-4"><input id="toggleTable2" name="toggletable2" type="button"
+                value="Show/Hide Table" class="fullWidth toggleTable" data-table="mouseTable"/>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4"><input id="toCSV2" name="tocsv2" type="button" value="Save CSV"
+                class="fullWidth toCSV" data-table="mouseTable" /></div>
+
+        <div class="col-12 col-sm-6 col-md-4">
+            <input id="copyDataButton2" name="copydatabutton2" type="button" value="Copy Data" class="fullWidth copyData" data-table="mouseTable"/>
+            <br />Copy Table Head? <input id="copyHead2" name="copyhead2" type="checkbox" class="copyHead" data-table="mouseTable"/>
+            <br />Transpose Table? <input id="transpose2" name="transpose2" type="checkbox" class="transpose" data-table="mouseTable" />
+        </div>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div id="forCopy">&nbsp;</div>
+    <div id="errorMsg">&nbsp;</div>
+</div>
+
+<div class="container mt-2">
+    <div class="table-responsive xsTableDiv">
+        <table class="table" id="mouseTable">
+            <thead>
+                <tr>
+                    <th>mouseID</th>
+                    <th>shortID</th>
+                    <th>treatment</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+<div class="container hideView">
+    <div class="row mt-2">
+        <h3 class="col">Add mice from other sources:</h3>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Options
+        </div>
+        <div class="col">
+            <label for="makeRowHead">Make first row header:</label> <input type="checkbox" name="makerowhead" id="makeRowHead"/><br/><label for="makeColHead">Make first column header:</label> <input type="checkbox" name="makecolhead" id="makeColHead"/>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Paste Excel table
+        </div>
+        <div class="col">
+            <textarea name="pastefield" id="pasteField" class="autoAdjust fullWidth"></textarea>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Make a table
+        </div>
+        <div class="col">
+            <input type="button" value="Convert to HTML table" id="convertToTable" name="converttotable" class="fullWidth"/>
+        </div>
+    </div>
+    <div class="row mt-2 align-items-center">
+        <h4 class="myLeftCol">Import CSV</h4>
+        <div class="col">Save as CSV in other widget, then select the CSV below</div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Select CSV:
+        </div>
+        <div class="col">
+            <input type="file" id="fileUpload" name="fileupload" class="fullWidth"></input>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Preview Table:
+        </div>
+        <div class="col">
+            <input type="button" id="preview" name="preview" value="Preview" class="fullWidth" onclick="my_widget_script.preview()"></input>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-2 hideView">
+    <div class="table-responsive xsTableDiv forTable">
+        &nbsp;
+    </div>
+</div>
+
+
+<div class="container mt-2 hideView">
+    
+    <div class="row mt-1">
+        <div class= "col table-responsive xsTableDiv" id="dvCSV">
+            &nbsp;
+        </div>
+    </div>
+    <hr />
+    <div class="row mt-2">
+        <div class="myLeftCol">Add to this widget:</div>
+        <div class="col"><input type="button" value="upload" id="upload" name="upload" class="fullWidth" onclick="my_widget_script.upload()"></div>
+    </div>
+</div>
+
+</div>
+
+
+<!-- #endregion -->
