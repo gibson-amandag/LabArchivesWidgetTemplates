@@ -1,0 +1,284 @@
+<!-- #region HTML -->
+<!-- Bootstrap CSS -->
+<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet" />
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* responsive table doesn't work with xs screen sizes for some reason, so apply a specific width for these */
+    @media (max-width: 576px) {
+        .xsTableDiv {
+            width: 300px !important;
+            overflow-x: scroll;
+        }
+    }
+
+    table {
+        border: 2px solid black;
+    }
+
+    th {
+        padding: 5px;
+        border: 2px solid black;
+    }
+
+    td {
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .fullWidth {
+        width: 90%
+    }
+
+    .noPlay>a {
+        color: black;
+        text-decoration: none;
+        cursor:inherit;
+    }
+
+    .stampRow.entry {
+        background-color:#ccdbf6
+    }
+
+    .stampRow.exit{
+        background-color: #f4c8ce;
+    }
+</style>
+
+<!-- TO DO Begin typing your HTML code here -->
+<div class="container">
+    <p>Elements that are required to save this page are marked with a red asterisk <span
+            style="color:red">*</span><br />
+        Elements that are required to copy the table or save to CSV are marked with a blue pound sign <span
+            style="color:blue">#</span></p>
+</div>
+<div class="container">
+    <div class="row">
+        <h3 class="col">Dam Information</h3>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">Dam ID:</div>
+        <div class="col">
+            <input type="text" name="damid" id="damID" class="fullWidth simpleCalc">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            PND:
+        </div>
+        <div class="col">
+            <input type="number" name="pnd" id="pnd" class="fullWidth simpleCalc">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Zeitgeber Time:
+        </div>
+        <div class="col">
+            <input type="number" min="0" max="24" name="zt" id="zt" class="fullWidth simpleCalc">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Recording Date:
+        </div>
+        <div class="col">
+            <input type="date" name="recdate" id="recDate" class="fullWidth">
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Recording Time:
+        </div>
+        <div class="col">
+            <input type="time" name="rectime" id="recTime" class="fullWidth">
+        </div>
+    </div>
+</div>
+<div class="container">
+    <h3>File Information</h3>
+    <div class="row align-items-end hideView">
+        <div class="myLeftCol">Select video file:</div>
+        <div class="col">
+            <input type="file" name="myfile" id="myfile">&nbsp;</input>
+        </div>
+    </div>
+    <div class="row mt-2 align-items-end">
+        <div class="myLeftCol">File Name:</div>
+        <div class="col">
+            <span class="filePath">[Select a file]</span>
+        </div>
+    </div>
+    <div class="row mt-2 align-items-end hideView">
+        <div class="myLeftCol">Playback speed:</div>
+        <div class="col">
+            <input type="number" name="changespeed" id="changeSpeed" value="5"/>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">Duration (in sec): </div>
+        <div class="col">
+            <input type="number" name="videodur" id="videoDur" step="any" class="simpleCalc" value="3600"/> <span class="hideView" >Get duration automatically: </span><input type="checkbox" name="getdur" id="getDur" class="hideView" checked>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-2 hideView">
+    <div class="row">
+        <h3 class="col">Add Time Stamps</h3>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol requiredLab">Starting State of Dam:</div>
+        <div class="col">
+            <select name="startstate" id="startState" class="fullWidth" required>
+                <option value="">[Select]</option>
+                <option value="off">Off nest</option>
+                <option value="on">On nest</option>
+            </select>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Clear all stamps:
+        </div>
+        <div class="col">
+            <input type="button" value="Clear all stamps" name="clearstamps" id="clearStamps" class="disableOnView fullWidth" />
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Undo last stamp:
+        </div>
+        <div class="col">
+            <input type="button" value="Undo last stamp" name="removestampbutton" id="removeStampButton" class="disableOnView fullWidth" disabled/>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">Keys to change video</div>
+        <div class="col">
+            <code>q</code> = 3x; <code>w</code> = 5x; <code>a</code> = 10x; <code>s</code> = 16x<br/>
+            <code>z</code> = back 30 sec; <code>x</code> = play/pause; <code>c</code> = forward 30 sec<br/>
+            <em>work when focus is on add entry/exit button</em>
+        </div>
+    </div>
+    <div class="row mt-2">
+        <div class="myLeftCol">
+            Press to add stamp:
+        </div>
+        <div class="col">
+            <input type="button" value="[Enter Start State]" name="addstampbutton" id="addStampButton" class="disableOnView fullWidth" disabled/>
+        </div>
+    </div>
+</div>
+<div class="container mt-2 videoDiv hideView">
+    <h3>Video Playback:</h3>
+    <video id="videoPlayer" name="videoplayer" controls>&nbsp;</video>
+</div>
+<div class="container mt-2 stampsDiv">
+    <div class="row">
+        <div class="col">
+            <h4>State</h4>
+        </div>
+        <div class="col">
+            <h4>At time: (sec)</h4>
+        </div>
+        <div class="col">
+            <h4>Time Stamp:</h4>
+        </div>
+        <div class="col">
+            <h4>Duration: (sec)</h4>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row mt-2">
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="copyDataButton" name="copydatabutton" type="button" value="Copy Output Data" class="fullWidth" />
+            <br />Copy Table Head? <input id="copyHead" name="copyhead" type="checkbox" />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="toCSV" name="tocsv" type="button" value="Save CSV" class="fullWidth" />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="copyDursButton" name="copydursbutton" type="button" value="Copy Durations" class="fullWidth" />
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="copyTimesButton" name="copytimesbutton" type="button" value="Copy Times" class="fullWidth" />
+        </div>
+    </div>
+</div>
+
+<div id="forCopy">&nbsp;</div>
+
+<!-- Error Message Div -->
+<div class="container" id="errorMsg">&nbsp;</div>
+
+<!-- Example Table Container that is responsive to window width, including for xs -->
+<div class="container mt-2">
+    <div class="table-responsive xsTableDiv outTableDiv">
+        <table class="table" id="outTable">
+            <thead>
+                <tr>
+                    <th>damID</th>
+                    <th>PND</th>
+                    <th>ZT</th>
+                    <th>Duration</th>
+                    <th>Num_exits</th>
+                    <th>Num_entries</th>
+                    <th>Time_off_nest</th>
+                    <th>Time_on_nest</th>
+                    <th>Perc_off_nest</th>
+                    <th>Perc_on_nest</th>
+                    <th>Avg_dur_off_nest</th>
+                    <th>Avg_dur_on_nest</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="damID_calc">&nbsp;</td>
+                    <td class="pnd_calc">&nbsp;</td>
+                    <td class="zt_calc">&nbsp;</td>
+                    <td class="videoDur_calc">&nbsp;</td>
+                    <td class="numExits_calc">&nbsp;</td>
+                    <td class="numEntries_calc">&nbsp;</td>
+                    <td class="timeOffNest_calc">&nbsp;</td>
+                    <td class="timeOnNest_calc">&nbsp;</td>
+                    <td class="percOffNest_calc">&nbsp;</td>
+                    <td class="percOnNest_calc">&nbsp;</td>
+                    <td class="avgDurOffNest_calc">&nbsp;</td>
+                    <td class="avgDurOnNest_calc">&nbsp;</td>
+                </tr>
+            </tbody>
+        </table>
+        <p>&nbsp;</p>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <!-- <div class="row">
+        <div class="col">
+            <input type="button" value="Save Timeline" id="saveChart" name="savechart"/>
+        </div>
+    </div>
+    <div class="row canvasRow">
+        <div class="col">
+            <canvas id="canvas" class="fullWidth" height="150px"></canvas>
+        </div>
+    </div> -->
+    <div class="row">
+        <h3 class="col">Timeline</h3>
+    </div>
+    <div class="row">
+        <div class="col" id="chart_div" style="height: 150px;">&nbsp;</div>
+    </div>
+</div>
+
+
+
+
+<!-- #endregion -->

@@ -1,0 +1,102 @@
+<!-- #region HTML -->
+<!-- Bootstrap CSS -->
+<link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" rel="stylesheet" />
+<style type="text/css">
+    /* TO DO Place css styling code here */
+
+    /* responsive table doesn't work with xs screen sizes for some reason, so apply a specific width for these */
+    @media (max-width: 576px) {
+        .xsTableDiv {
+            width: 300px !important;
+            overflow-x: scroll;
+        }
+    }
+
+    table {
+        border: 2px solid black;
+    }
+
+    th {
+        padding: 5px;
+        border: 2px solid black;
+    }
+
+    td {
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .fullWidth {
+        width: 100%
+    }
+
+    .make100{
+        width:100vw;
+    }
+</style>
+
+<!-- TO DO Begin typing your HTML code here -->
+
+<!-- One example container for two column input that is responsive to window width -->
+<div class="make100">
+<div class="container">
+    <div class="row mt-2">
+        <div class="col hideView">
+            <input type="button" value="Add Cell" name="addcelltop" id="addCellTop" class="addCell fullWidth"/>
+        </div>
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div class="row" id="cellCardDiv">
+        &nbsp;
+    </div>
+</div>
+
+<div class="container mt-2">
+    <div id="forCopy">&nbsp;</div>
+    <div id="errorMsg">&nbsp;</div>
+</div>
+
+<div class="container mt-2">
+    <div class="row mt-2">
+        <div class="col-12 col-sm-6 col-md-3"><input id="toggleTable1" name="toggletable1" type="button"
+                value="Show/Hide Table" class="fullWidth toggleTable" data-table="cellTable"/>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-3"><input id="toCSV1" name="tocsv1" type="button" value="Save CSV"
+                class="fullWidth toCSV" data-table="cellTable" /></div>
+        
+        <div class="col-12 col-sm-6 col-md-3">
+            <input id="copyDataButton1" name="copydatabutton1" type="button" value="Copy Data" class="fullWidth copyData" data-table="cellTable"/>
+            <br />Copy Table Head? <input id="copyHead1" name="copyhead1" type="checkbox" class="copyHead" data-table="cellTable"/>
+            <br />Transpose Table? <input id="transpose1" name="transpose1" type="checkbox" class="transpose" data-table="cellTable" />
+        </div>
+    </div>
+</div>
+
+<!-- Example Table Container that is responsive to window width, including for xs -->
+<div class="container mt-2">
+    <div class="table-responsive xsTableDiv">
+        <table class="table" id="cellTable">
+            <thead>
+                <tr>
+                    <th class="cellID">Cell</th>
+                    <th class="cellNum">Cell number</th>
+                    <th class="cellLoc">Cell location</th>
+                    <th class="cellType">Cell type</th>
+                    <th class="endCell">End cell</th>
+                    <th class="notes">Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <p>&nbsp;</p>
+    </div>
+</div>
+</div>
+
+
+<!-- #endregion -->
